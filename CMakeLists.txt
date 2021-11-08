@@ -9,7 +9,7 @@ project(Lagerberekening VERSION 0.1.0)
 
 # Build flags
 if(UNIX)
-add_compile_options(-Wall -Wextra -pedantic -Ofast -march=native -std=c2x) # nog -O3 -Ofast toevoegen of -O2; -Og voor debuggen
+add_compile_options(-Wall -Wextra -pedantic -Og -march=native -std=c2x) # nog -O3 -Ofast toevoegen of -O2; -Og voor debuggen
 endif(UNIX)
 if(MSVC)
 add_compile_definitions(WINNI)
@@ -22,7 +22,7 @@ add_executable(Lagerberekening src/main.c)
 
 target_link_libraries(Lagerberekening lagerfuncties)
 
-target_link_libraries(Lagerberekening raylib GL m pthread dl gsl csv) # libm voor math.h
+target_link_libraries(Lagerberekening raylib GL m pthread dl gsl gslcblas csv) # libm voor math.h
 
 add_library(lagerfuncties src/lagerfuncties.c) 
 
