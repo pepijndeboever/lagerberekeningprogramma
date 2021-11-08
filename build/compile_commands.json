@@ -1,12 +1,12 @@
 [
 {
   "directory": "/home/test/lagerberekeningprogramma/build",
-  "command": "/usr/bin/clang-13 -g -Wall -Wextra -pedantic -Og -march=native -std=c2x -o CMakeFiles/lagerfuncties.dir/src/lagerfuncties.c.o -c /home/test/lagerberekeningprogramma/src/lagerfuncties.c",
+  "command": "/usr/bin/clang-13 -g -Wall -Wextra -pedantic -O3 -march=native -std=c2x -o CMakeFiles/lagerfuncties.dir/src/lagerfuncties.c.o -c /home/test/lagerberekeningprogramma/src/lagerfuncties.c",
   "file": "/home/test/lagerberekeningprogramma/src/lagerfuncties.c"
 },
 {
   "directory": "/home/test/lagerberekeningprogramma/build",
-  "command": "/usr/bin/clang-13 -g -Wall -Wextra -pedantic -Og -march=native -std=c2x -o CMakeFiles/Lagerberekening.dir/src/main.c.o -c /home/test/lagerberekeningprogramma/src/main.c",
+  "command": "/usr/bin/clang-13 -g -Wall -Wextra -pedantic -O3 -march=native -std=c2x -o CMakeFiles/Lagerberekening.dir/src/main.c.o -c /home/test/lagerberekeningprogramma/src/main.c",
   "file": "/home/test/lagerberekeningprogramma/src/main.c"
 }
 ]

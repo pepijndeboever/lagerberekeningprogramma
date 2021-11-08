@@ -99,7 +99,7 @@ build cmake_object_order_depends_target_lagerfuncties: phony || CMakeFiles/lager
 
 build CMakeFiles/lagerfuncties.dir/src/lagerfuncties.c.o: C_COMPILER__lagerfuncties_Debug /home/test/lagerberekeningprogramma/src/lagerfuncties.c || cmake_object_order_depends_target_lagerfuncties
   DEP_FILE = CMakeFiles/lagerfuncties.dir/src/lagerfuncties.c.o.d
-  FLAGS = -g -Wall -Wextra -pedantic -Og -march=native -std=c2x
+  FLAGS = -g -Wall -Wextra -pedantic -O3 -march=native -std=c2x
   OBJECT_DIR = CMakeFiles/lagerfuncties.dir
   OBJECT_FILE_DIR = CMakeFiles/lagerfuncties.dir/src
 
@@ -130,7 +130,7 @@ build cmake_object_order_depends_target_Lagerberekening: phony || cmake_object_o
 
 build CMakeFiles/Lagerberekening.dir/src/main.c.o: C_COMPILER__Lagerberekening_Debug /home/test/lagerberekeningprogramma/src/main.c || cmake_object_order_depends_target_Lagerberekening
   DEP_FILE = CMakeFiles/Lagerberekening.dir/src/main.c.o.d
-  FLAGS = -g -Wall -Wextra -pedantic -Og -march=native -std=c2x
+  FLAGS = -g -Wall -Wextra -pedantic -O3 -march=native -std=c2x
   OBJECT_DIR = CMakeFiles/Lagerberekening.dir
   OBJECT_FILE_DIR = CMakeFiles/Lagerberekening.dir/src
 
