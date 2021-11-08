@@ -15,7 +15,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-addr2line"
+			"value" : "/usr/bin/llvm-addr2line"
 		},
 		{
 			"name" : "CMAKE_AR",
@@ -31,7 +31,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-ar"
+			"value" : "/usr/bin/llvm-ar"
 		},
 		{
 			"name" : "CMAKE_BUILD_TYPE",
@@ -92,22 +92,6 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "4"
-		},
-		{
-			"name" : "CMAKE_COLOR_MAKEFILE",
-			"properties" : 
-			[
-				{
-					"name" : "ADVANCED",
-					"value" : "1"
-				},
-				{
-					"name" : "HELPSTRING",
-					"value" : "Enable/Disable color output during build."
-				}
-			],
-			"type" : "BOOL",
-			"value" : "ON"
 		},
 		{
 			"name" : "CMAKE_COMMAND",
@@ -175,7 +159,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-gcc-ar-11"
+			"value" : "/usr/bin/gcc-ar"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER_RANLIB",
@@ -191,7 +175,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-gcc-ranlib-11"
+			"value" : "/usr/bin/gcc-ranlib"
 		},
 		{
 			"name" : "CMAKE_CXX_FLAGS",
@@ -283,11 +267,11 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : "No help, variable specified on the command line."
+					"value" : "C compiler"
 				}
 			],
-			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-gcc-11"
+			"type" : "STRING",
+			"value" : "/usr/bin/clang-13"
 		},
 		{
 			"name" : "CMAKE_C_COMPILER_AR",
@@ -299,11 +283,11 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : "A wrapper around 'ar' adding the appropriate '--plugin' option for the GCC compiler"
+					"value" : "LLVM archiver"
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-gcc-ar-11"
+			"value" : "/usr/bin/llvm-ar"
 		},
 		{
 			"name" : "CMAKE_C_COMPILER_RANLIB",
@@ -315,11 +299,11 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : "A wrapper around 'ranlib' adding the appropriate '--plugin' option for the GCC compiler"
+					"value" : "Generate index for LLVM archive"
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-gcc-ranlib-11"
+			"value" : "/usr/bin/llvm-ranlib"
 		},
 		{
 			"name" : "CMAKE_C_FLAGS",
@@ -415,19 +399,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "CMAKE_DLLTOOL-NOTFOUND"
-		},
-		{
-			"name" : "CMAKE_EDIT_COMMAND",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Path to cache edit program executable."
-				}
-			],
-			"type" : "INTERNAL",
-			"value" : "/usr/bin/ccmake"
+			"value" : "/usr/bin/llvm-dlltool"
 		},
 		{
 			"name" : "CMAKE_EXECUTABLE_FORMAT",
@@ -555,7 +527,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "Unix Makefiles"
+			"value" : "Ninja"
 		},
 		{
 			"name" : "CMAKE_GENERATOR_INSTANCE",
@@ -627,7 +599,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "1"
+			"value" : "0"
 		},
 		{
 			"name" : "CMAKE_LINKER",
@@ -643,7 +615,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-ld"
+			"value" : "/usr/bin/ld.lld"
 		},
 		{
 			"name" : "CMAKE_MAKE_PROGRAM",
@@ -655,11 +627,11 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : "Path to a program."
+					"value" : "Program used to build from build.ninja files."
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/gmake"
+			"value" : "/usr/bin/ninja"
 		},
 		{
 			"name" : "CMAKE_MODULE_LINKER_FLAGS",
@@ -755,7 +727,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-nm"
+			"value" : "/usr/bin/llvm-nm"
 		},
 		{
 			"name" : "CMAKE_NUMBER_OF_MAKEFILES",
@@ -783,7 +755,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-objcopy"
+			"value" : "/usr/bin/llvm-objcopy"
 		},
 		{
 			"name" : "CMAKE_OBJDUMP",
@@ -799,7 +771,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-objdump"
+			"value" : "/usr/bin/llvm-objdump"
 		},
 		{
 			"name" : "CMAKE_PLATFORM_INFO_INITIALIZED",
@@ -923,7 +895,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-ranlib"
+			"value" : "/usr/bin/llvm-ranlib"
 		},
 		{
 			"name" : "CMAKE_READELF",
@@ -939,7 +911,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-readelf"
+			"value" : "/usr/bin/llvm-readelf"
 		},
 		{
 			"name" : "CMAKE_ROOT",
@@ -1159,7 +1131,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/x86_64-linux-gnu-strip"
+			"value" : "/usr/bin/llvm-strip"
 		},
 		{
 			"name" : "CMAKE_UNAME",
@@ -1171,7 +1143,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/bin/uname"
+			"value" : "/usr/bin/uname"
 		},
 		{
 			"name" : "CMAKE_VERBOSE_MAKEFILE",

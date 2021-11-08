@@ -5,22 +5,21 @@
 		{
 			"compiler" : 
 			{
-				"id" : "GNU",
+				"id" : "Clang",
 				"implicit" : 
 				{
 					"includeDirectories" : 
 					[
-						"/usr/lib/gcc/x86_64-linux-gnu/11/include",
+						"/usr/lib64/clang/13.0.0/include",
 						"/usr/local/include",
-						"/usr/include/x86_64-linux-gnu",
 						"/usr/include"
 					],
 					"linkDirectories" : 
 					[
-						"/usr/lib/gcc/x86_64-linux-gnu/11",
-						"/usr/lib/x86_64-linux-gnu",
+						"/usr/lib64/gcc/x86_64-slackware-linux/11.2.0",
+						"/usr/lib64",
+						"/lib64",
 						"/usr/lib",
-						"/lib/x86_64-linux-gnu",
 						"/lib"
 					],
 					"linkFrameworkDirectories" : [],
@@ -33,8 +32,8 @@
 						"gcc_s"
 					]
 				},
-				"path" : "/usr/bin/x86_64-linux-gnu-gcc-11",
-				"version" : "11.2.0"
+				"path" : "/usr/bin/clang-13",
+				"version" : "13.0.0"
 			},
 			"language" : "C",
 			"sourceFileExtensions" : 
@@ -51,21 +50,19 @@
 				{
 					"includeDirectories" : 
 					[
-						"/usr/include/c++/11",
-						"/usr/include/x86_64-linux-gnu/c++/11",
-						"/usr/include/c++/11/backward",
-						"/usr/lib/gcc/x86_64-linux-gnu/11/include",
+						"/usr/include/c++/11.2.0",
+						"/usr/include/c++/11.2.0/x86_64-slackware-linux",
+						"/usr/include/c++/11.2.0/backward",
+						"/usr/lib64/gcc/x86_64-slackware-linux/11.2.0/include",
 						"/usr/local/include",
-						"/usr/include/x86_64-linux-gnu",
+						"/usr/lib64/gcc/x86_64-slackware-linux/11.2.0/include-fixed",
 						"/usr/include"
 					],
 					"linkDirectories" : 
 					[
-						"/usr/lib/gcc/x86_64-linux-gnu/11",
-						"/usr/lib/x86_64-linux-gnu",
-						"/usr/lib",
-						"/lib/x86_64-linux-gnu",
-						"/lib"
+						"/usr/lib64/gcc/x86_64-slackware-linux/11.2.0",
+						"/usr/lib64",
+						"/lib64"
 					],
 					"linkFrameworkDirectories" : [],
 					"linkLibraries" : 
