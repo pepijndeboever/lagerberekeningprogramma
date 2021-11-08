@@ -1,2 +1,0 @@
-/usr/bin/x86_64-linux-gnu-ar qc liblagerfuncties.a CMakeFiles/lagerfuncties.dir/src/lagerfuncties.c.o
-/usr/bin/x86_64-linux-gnu-ranlib liblagerfuncties.a

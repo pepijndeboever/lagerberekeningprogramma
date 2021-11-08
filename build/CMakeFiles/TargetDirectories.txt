@@ -1,6 +1,0 @@
-/home/test/lagerberekeningprogramma/build/CMakeFiles/edit_cache.dir
-/home/test/lagerberekeningprogramma/build/CMakeFiles/package_source.dir
-/home/test/lagerberekeningprogramma/build/CMakeFiles/rebuild_cache.dir
-/home/test/lagerberekeningprogramma/build/CMakeFiles/package.dir
-/home/test/lagerberekeningprogramma/build/CMakeFiles/lagerfuncties.dir
-/home/test/lagerberekeningprogramma/build/CMakeFiles/Lagerberekening.dir

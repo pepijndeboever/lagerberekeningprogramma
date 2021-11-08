@@ -1,1 +1,0 @@
-/usr/bin/x86_64-linux-gnu-gcc-11 -g -rdynamic CMakeFiles/Lagerberekening.dir/src/main.c.o -o Lagerberekening  liblagerfuncties.a -lraylib -lGL -lm -lpthread -ldl -lgsl -lcsv 
