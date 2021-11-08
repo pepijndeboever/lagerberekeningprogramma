@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <gsl/gsl_integration.h>
-#include <csv.h>
+#include <libcsv/csv.h>
 
 #include "lagers/headers/carblager.h"
 #include "lagers/headers/cilinderlagers.h"
