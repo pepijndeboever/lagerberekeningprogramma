@@ -330,6 +330,11 @@ int main()
     gevondenlagers lagergegevensGevondenLagers;
     lagergegevensGevondenLagers.aantal = 0;
     lagergegevensGevondenLagers.lagers = NULL;
+    lagerinformatie lagergegevensGekozenLager;
+    lagergegevensGekozenLager.aantalGegevens = 0;
+    lagergegevensGekozenLager.kolomtitels = NULL;
+    lagergegevensGekozenLager.lagergegevens = NULL;
+    lagergegevensGekozenLager.typelager = NULL;
 
     // Berekende Waarden
     double levensduur_Berekend = 0.0;
@@ -563,20 +568,22 @@ int main()
             // Bepalen welk lager is gekozen.
             char* gekozenLager = lagergegevensGevondenLagers.lagers[lagergegevens_ddbGevondenLagerActive];
             // Lagergegevens ophalen
-            lagerinformatie lager = ExactZoeken(gekozenLager);
+            // Oude lagerinformatie verwijderen
+            free_lagerinformatie(&lagergegevensGekozenLager);
+            // Nieuwe lagerinformatie zoeken
+            lagergegevensGekozenLager = ExactZoeken(gekozenLager);
+
 
             // Tabel aanmaken
-            lagergegevens_Tabelvakken = textvakkenMaken(lager.aantalGegevens, 2);
+            lagergegevens_Tabelvakken = textvakkenMaken(lagergegevensGekozenLager.aantalGegevens, 2);
 
-            strcpy(lagergegevens_lblTypeLager, lager.typelager);
-            for(size_t i = 0; i < lager.aantalGegevens; i++)
+            strcpy(lagergegevens_lblTypeLager, lagergegevensGekozenLager.typelager);
+            for(size_t i = 0; i < lagergegevensGekozenLager.aantalGegevens; i++)
             {
-                strcpy(lagergegevens_Tabelvakken[i][0].Text, lager.kolomtitels[i]);
-                strcpy(lagergegevens_Tabelvakken[i][1].Text, lager.lagergegevens[i]);
+                strcpy(lagergegevens_Tabelvakken[i][0].Text, lagergegevensGekozenLager.kolomtitels[i]);
+                strcpy(lagergegevens_Tabelvakken[i][1].Text, lagergegevensGekozenLager.lagergegevens[i]);
             }
-            lagergegevens_Rijen = lager.aantalGegevens;
-
-            free_lagerinformatie(&lager);
+            lagergegevens_Rijen = lagergegevensGekozenLager.aantalGegevens;
         }
 
         // Flankdetectie
