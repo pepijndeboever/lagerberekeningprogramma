@@ -9,7 +9,7 @@ project(Lagerberekening VERSION 0.1.0)
 
 # Build flags
 if(UNIX)
-add_compile_options(-Wall -Wextra -pedantic -O3 -march=native -std=c2x) # nog -O3 -Ofast toevoegen of -O2; -Og voor debuggen
+add_compile_options(-Wall -Wextra -pedantic -Og -march=native -std=c2x) # nog -O3 -Ofast toevoegen of -O2; -Og voor debuggen
 endif(UNIX)
 if(MSVC)
 add_compile_definitions(WINNI)

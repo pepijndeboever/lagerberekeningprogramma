@@ -26,6 +26,22 @@ enum lagertype
     AXIAAL_CILINDER
 };
 
+enum lagersoort
+{
+    LAGERSOORT_KOGELLAGER,
+    LAGERSOORT_DUBBELRIJIGKOGELLAGER,
+    LAGERSOORT_HOEKCONTACTKOGELLAGER,
+    LAGERSOORT_DUBBELRIJIGHOEKCONTACTKOGELLAGER,
+    LAGERSOORT_VIERPUNTSLAGER,
+    LAGERSOORT_ZICHINSTELLENDKOGELLAGER,
+    LAGERSOORT_CILINDERLAGER,
+    LAGERSOORT_KEGELLAGER,
+    LAGERSOORT_TONLAGER,
+    LAGERSOORT_DUBBELRIJIGTONLAGER,
+    LAGERSOORT_CARBLAGER
+};
+
+
 /**
  * @brief Berekend de standaard lagerlevensduur in miljoen omwentelingen
  * 
@@ -76,7 +92,7 @@ double NodigeViscositeit(double gemiddeldediameter, double toerental);
 typedef struct lagerinformatie
 {
     unsigned long aantalGegevens;
-    char* typelager;
+    enum lagersoort lagersoort;
     char** kolomtitels;
     char** lagergegevens;
 } lagerinformatie;
@@ -90,6 +106,8 @@ typedef struct gevondenlagers
 lagerinformatie ExactZoeken(char* zoekterm);
 
 gevondenlagers LagersZoeken(char* zoekterm);
+
+char* LagersoortNaarString(enum lagersoort lager);
 
 void free_gevondenlagers(gevondenlagers* lagers);
 

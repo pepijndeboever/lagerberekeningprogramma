@@ -384,52 +384,52 @@ lagerinformatie ExactZoeken(char* zoekterm)
     if(lager.aantalGegevens == 0) // Cilinderlager
     {
         lager = ExactZoeken_Intern(zoekterm, cilinderlagers_csv, cilinderlagers_csv_len);
-        lager.typelager = "Cilinderlager";
+        lager.lagersoort = LAGERSOORT_CILINDERLAGER;
     }
     if(lager.aantalGegevens == 0) // Dubbelrijghoekcontactkogellager
     {
         lager = ExactZoeken_Intern(zoekterm, dubbelrijighoekcontactkogellagers_csv, dubbelrijighoekcontactkogellagers_csv_len);
-        lager.typelager = "Dubbelrijghoekcontactkogellager";
+        lager.lagersoort = LAGERSOORT_DUBBELRIJIGHOEKCONTACTKOGELLAGER;
     }
     if(lager.aantalGegevens == 0) // Dubbelrijigkogellager
     {
         lager = ExactZoeken_Intern(zoekterm, dubbelrijigkogellager_csv, dubbelrijigkogellager_csv_len);
-        lager.typelager = "Dubbelrijigkogellager";
+        lager.lagersoort = LAGERSOORT_DUBBELRIJIGKOGELLAGER;
     }
     if(lager.aantalGegevens == 0) // Dubbelrijigtonlager
     {
         lager = ExactZoeken_Intern(zoekterm, dubbelrijigtonlagers_csv, dubbelrijigtonlagers_csv_len);
-        lager.typelager = "Dubbelrijigtonlager";
+        lager.lagersoort = LAGERSOORT_DUBBELRIJIGTONLAGER;
     }
     if(lager.aantalGegevens == 0) // Hoekcontactgollager
     {
         lager = ExactZoeken_Intern(zoekterm, hoekcontactkogellagers_csv, hoekcontactkogellagers_csv_len);
-        lager.typelager = "Hoekcontactkogellager";
+        lager.lagersoort = LAGERSOORT_HOEKCONTACTKOGELLAGER;
     }
     if(lager.aantalGegevens == 0) // Kegellager
     {
         lager = ExactZoeken_Intern(zoekterm, kegellagers_csv, kegellagers_csv_len);
-        lager.typelager = "Kegellager";
+        lager.lagersoort = LAGERSOORT_KEGELLAGER;
     }
     if(lager.aantalGegevens == 0) // Kogellager
     {
         lager = ExactZoeken_Intern(zoekterm, kogellagers_csv, kogellagers_csv_len);
-        lager.typelager = "Kogellager";
+        lager.lagersoort = LAGERSOORT_KOGELLAGER;
     }
     if(lager.aantalGegevens == 0) // Tonlager
     {
         lager = ExactZoeken_Intern(zoekterm, tonlagers_csv, tonlagers_csv_len);
-        lager.typelager = "Tonlager";
+        lager.lagersoort = LAGERSOORT_TONLAGER;
     }
     if(lager.aantalGegevens == 0) // Vierpuntslager
     {
         lager = ExactZoeken_Intern(zoekterm, vierpuntslagers_csv, vierpuntslagers_csv_len);
-        lager.typelager = "Vierpuntslager";
+        lager.lagersoort = LAGERSOORT_VIERPUNTSLAGER;
     }
     if(lager.aantalGegevens == 0) // Zichinstellendkogellager
     {
         lager = ExactZoeken_Intern(zoekterm, zichinstellandekogellagers_csv, zichinstellandekogellagers_csv_len);
-        lager.typelager = "Zichinstellendkogellager";
+        lager.lagersoort = LAGERSOORT_ZICHINSTELLENDKOGELLAGER;
     }
     
 
@@ -625,6 +625,38 @@ gevondenlagers LagersZoeken(char* zoekterm)
     return alleLagers;
 }
 
+char* LagersoortNaarString(enum lagersoort lager)
+{
+    switch(lager)
+    {
+    case LAGERSOORT_KOGELLAGER:
+        return "Kogellager";
+    case LAGERSOORT_DUBBELRIJIGKOGELLAGER:
+        return "Dubbelrijigkogellager";
+    case LAGERSOORT_HOEKCONTACTKOGELLAGER:
+        return "Hoekcontactkogellager";
+    case LAGERSOORT_DUBBELRIJIGHOEKCONTACTKOGELLAGER:
+        return "Dubbelrijighoekcontactkogellager";
+    case LAGERSOORT_VIERPUNTSLAGER:
+        return "Vierpuntslager";
+    case LAGERSOORT_ZICHINSTELLENDKOGELLAGER:
+        return "Zichinstellendkogellager";
+    case LAGERSOORT_CILINDERLAGER:
+        return "Cilinderlager";
+    case LAGERSOORT_KEGELLAGER:
+        return "Kegellager";
+    case LAGERSOORT_TONLAGER:
+        return "Tonlager";
+    case LAGERSOORT_DUBBELRIJIGTONLAGER:
+        return "Dubbelrijig Tonlager";
+    case LAGERSOORT_CARBLAGER:
+        return "Carblager";
+    default:
+        return NULL;
+    }
+}
+
+
 
 void free_gevondenlagers(gevondenlagers* lagers)
 {
@@ -659,5 +691,4 @@ void free_lagerinformatie(lagerinformatie* lager)
     lager->aantalGegevens = 0;
     lager->kolomtitels = NULL;
     lager->lagergegevens = NULL;
-    lager->typelager = NULL;
 }

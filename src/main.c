@@ -334,7 +334,7 @@ int main()
     lagergegevensGekozenLager.aantalGegevens = 0;
     lagergegevensGekozenLager.kolomtitels = NULL;
     lagergegevensGekozenLager.lagergegevens = NULL;
-    lagergegevensGekozenLager.typelager = NULL;
+    lagergegevensGekozenLager.lagersoort = 0;
 
     // Berekende Waarden
     double levensduur_Berekend = 0.0;
@@ -577,7 +577,8 @@ int main()
             // Tabel aanmaken
             lagergegevens_Tabelvakken = textvakkenMaken(lagergegevensGekozenLager.aantalGegevens, 2);
 
-            strcpy(lagergegevens_lblTypeLager, lagergegevensGekozenLager.typelager);
+            strcpy(lagergegevens_lblTypeLager, LagersoortNaarString(lagergegevensGekozenLager.lagersoort));
+            
             for(size_t i = 0; i < lagergegevensGekozenLager.aantalGegevens; i++)
             {
                 strcpy(lagergegevens_Tabelvakken[i][0].Text, lagergegevensGekozenLager.kolomtitels[i]);
