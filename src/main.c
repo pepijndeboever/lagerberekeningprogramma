@@ -588,8 +588,6 @@ int main()
 
             // Anders blijft het oude staan
             ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR))); 
-            
-            DrawFPS(100,100);
 
             //GuiLoadStyle("../src/jungle.rgs");
             // raygui: controls drawing
