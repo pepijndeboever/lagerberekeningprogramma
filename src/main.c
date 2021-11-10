@@ -576,7 +576,7 @@ int main()
             }
             lagergegevens_Rijen = lager.aantalGegevens;
 
-            free_lagerinformatie(lager);
+            free_lagerinformatie(&lager);
         }
 
         // Flankdetectie
@@ -989,7 +989,7 @@ static void lagergegevens_btnZoeken(char *zoekterm, char *lijst, gevondenlagers 
 
             // Lagers opslaan
             // Oude gegevens eerst verwijderen
-            free_gevondenlagers(*delagers);
+            free_gevondenlagers(delagers);
             *delagers = lagers;
         }
         else

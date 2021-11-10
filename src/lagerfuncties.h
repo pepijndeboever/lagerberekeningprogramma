@@ -91,6 +91,6 @@ lagerinformatie ExactZoeken(char* zoekterm);
 
 gevondenlagers LagersZoeken(char* zoekterm);
 
-void free_gevondenlagers(gevondenlagers lagers);
+void free_gevondenlagers(gevondenlagers* lagers);
 
-void free_lagerinformatie(lagerinformatie lager);
+void free_lagerinformatie(lagerinformatie* lager);

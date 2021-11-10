@@ -626,29 +626,38 @@ gevondenlagers LagersZoeken(char* zoekterm)
 }
 
 
-void free_gevondenlagers(gevondenlagers lagers)
+void free_gevondenlagers(gevondenlagers* lagers)
 {
-    if(lagers.aantal != 0)
+    if(lagers->aantal!= 0)
     {
-        for(size_t i = 0; i < lagers.aantal; i++)
+        for(size_t i = 0; i < lagers->aantal; i++)
         {
-            free(lagers.lagers[i]);
+            free(lagers->lagers[i]);
         }
-        free(lagers.lagers);
+        free(lagers->lagers);
     }
+
+    lagers->aantal = 0;
+    lagers->lagers = NULL;
+
 }
 
-void free_lagerinformatie(lagerinformatie lager)
+void free_lagerinformatie(lagerinformatie* lager)
 {
-    if (lager.aantalGegevens != 0)
+    if (lager->aantalGegevens != 0)
     {
-        for (size_t i = 0; i < lager.aantalGegevens; i++)
+        for (size_t i = 0; i < lager->aantalGegevens; i++)
         {
-            free(lager.lagergegevens[i]);
-            free(lager.kolomtitels[i]);
+            free(lager->lagergegevens[i]);
+            free(lager->kolomtitels[i]);
         }
-        free(lager.lagergegevens);
-        free(lager.kolomtitels);
+        free(lager->lagergegevens);
+        free(lager->kolomtitels);
         //free(lager.typelager);// is geen malloc string, maar een constante ergens in het geheugen
     }
+
+    lager->aantalGegevens = 0;
+    lager->kolomtitels = NULL;
+    lager->lagergegevens = NULL;
+    lager->typelager = NULL;
 }
