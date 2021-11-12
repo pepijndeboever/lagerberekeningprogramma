@@ -733,6 +733,14 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
             resultaat = equivalenteBelasting_Kogellager(radiaalkracht, axiaalkracht, f0, C0);
         }
         break;
+        case LAGERSOORT_DUBBELRIJIGKOGELLAGER:
+        {
+            // Nodige gegevens uitlezen om de equivalente belasting te berekenen (f0 en statisch draaggetal)
+            double f0 = atof(lager.lagergegevens[9]);
+            double C0 = atof(lager.lagergegevens[5]);
+            resultaat = equivalenteBelasting_Kogellager(radiaalkracht, axiaalkracht, f0, C0);
+        }
+        break;
     
     default:
         break;
