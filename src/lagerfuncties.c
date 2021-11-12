@@ -761,6 +761,22 @@ static double equivalenteBelasting_Vierpuntslager(double radiaalkracht, double a
     return resultaat;
 }
 
+static double equivalenteBelasting_ZichInstellendKogellager(double radiaalkracht, double axiaalkracht, double e, double Y1, double Y2)
+{
+    double resultaat = 0;
+
+    if((axiaalkracht/radiaalkracht) <= e)
+    {
+        resultaat = radiaalkracht + Y1 * axiaalkracht;
+    }
+    else
+    {
+        resultaat = 0.65 * radiaalkracht + Y2 * axiaalkracht;
+    }
+
+    return resultaat;
+}
+
 double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double axiaalkracht)
 {
     double resultaat = 0;
@@ -793,7 +809,14 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
             resultaat = equivalenteBelasting_Vierpuntslager(radiaalkracht, axiaalkracht);
         }
         break;
-    
+        case LAGERSOORT_ZICHINSTELLENDKOGELLAGER:
+        {
+            double e = atof(lager.lagergegevens[9]);
+            double Y1 = atof(lager.lagergegevens[10]);
+            double Y2 = atof(lager.lagergegevens[11]);
+            resultaat = equivalenteBelasting_ZichInstellendKogellager(radiaalkracht, axiaalkracht, e, Y1, Y2);
+        }
+        break;
     default:
         break;
     }
