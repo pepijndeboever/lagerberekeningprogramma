@@ -741,6 +741,26 @@ static double equivalenteBelasting_Hoekcontactkogellager(double radiaalkracht, d
     return resultaat;
 }
 
+static double equivalenteBelasting_Vierpuntslager(double radiaalkracht, double axiaalkracht)
+{
+    double resultaat = 0;
+
+    if(radiaalkracht == 0)
+    {
+        resultaat = 1.07 * axiaalkracht;
+    }
+    else if((axiaalkracht/radiaalkracht) <= 0.95)
+    {
+        resultaat = radiaalkracht + 0.66 * axiaalkracht;
+    }
+    else
+    {
+        resultaat = 0.6 * radiaalkracht + 1.07 * axiaalkracht;
+    }
+
+    return resultaat;
+}
+
 double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double axiaalkracht)
 {
     double resultaat = 0;
@@ -767,6 +787,10 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
         case LAGERSOORT_HOEKCONTACTKOGELLAGER:
         {
             resultaat = equivalenteBelasting_Hoekcontactkogellager(radiaalkracht, axiaalkracht);
+        }
+        case LAGERSOORT_VIERPUNTSLAGER:
+        {
+            resultaat = equivalenteBelasting_Vierpuntslager(radiaalkracht, axiaalkracht);
         }
         break;
     
