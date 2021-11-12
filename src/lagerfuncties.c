@@ -718,6 +718,29 @@ static double equivalenteBelasting_Kogellager(double radiaalkracht, double axiaa
     return resultaat;
 }
 
+/**
+ * @brief Veronderstel X of O opstelling
+ * 
+ * @param radiaalkracht 
+ * @param axiaalkracht 
+ * @return double 
+ */
+static double equivalenteBelasting_Hoekcontactkogellager(double radiaalkracht, double axiaalkracht)
+{
+    double resultaat = 0;
+    // Indien de verhouding tussen de axiale en radiale kracht kleiner is dan 1,14 is de equivalente belasting gelijk aan de radiale kracht
+    if((axiaalkracht/radiaalkracht) <= 1.14)
+    {
+        resultaat = radiaalkracht + 0.55 * axiaalkracht;
+    }
+    else
+    {
+        resultaat = 0.57 * radiaalkracht + 0.93 * axiaalkracht;
+    }
+
+    return resultaat;
+}
+
 double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double axiaalkracht)
 {
     double resultaat = 0;
@@ -739,6 +762,11 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
             double f0 = atof(lager.lagergegevens[9]);
             double C0 = atof(lager.lagergegevens[5]);
             resultaat = equivalenteBelasting_Kogellager(radiaalkracht, axiaalkracht, f0, C0);
+        }
+        break;
+        case LAGERSOORT_HOEKCONTACTKOGELLAGER:
+        {
+            resultaat = equivalenteBelasting_Hoekcontactkogellager(radiaalkracht, axiaalkracht);
         }
         break;
     
