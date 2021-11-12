@@ -112,3 +112,5 @@ char* LagersoortNaarString(enum lagersoort lager);
 void free_gevondenlagers(gevondenlagers* lagers);
 
 void free_lagerinformatie(lagerinformatie* lager);
+
+double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double axiaalkracht);

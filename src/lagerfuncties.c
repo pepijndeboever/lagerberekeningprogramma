@@ -656,8 +656,6 @@ char* LagersoortNaarString(enum lagersoort lager)
     }
 }
 
-
-
 void free_gevondenlagers(gevondenlagers* lagers)
 {
     if(lagers->aantal!= 0)
@@ -692,3 +690,55 @@ void free_lagerinformatie(lagerinformatie* lager)
     lager->kolomtitels = NULL;
     lager->lagergegevens = NULL;
 }
+
+static double equivalenteBelasting_Kogellager(double radiaalkracht, double axiaalkracht, double f0, double statischdraaggetal)
+{
+    double resultaat;
+
+    // Indien de verhouding tussen de axiale kracht en de radiale kracht kleiner is of gelijk aan e, dan is de equivalente belasting gelijk aan de radiale kracht, anders is het de som van de twee maal een bepaalde factor
+
+    double factor = (f0 * axiaalkracht) / statischdraaggetal;
+    // E kan als volgt worden benaderd
+    double e = 0.2853 * pow(factor, 0.2248);
+
+    if((axiaalkracht/radiaalkracht) <= e)
+    {
+        resultaat = radiaalkracht;
+    }
+    else
+    {
+        double X = 0.56;
+        // Y-waarde kan als volgt worden benaderd
+        double Y = 1.5346* pow(factor, -0.23);
+
+        resultaat = X * radiaalkracht + Y * axiaalkracht;
+    }
+
+
+    return resultaat;
+}
+
+double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double axiaalkracht)
+{
+    double resultaat = 0;
+    
+        
+    switch(lager.lagersoort)
+    {
+        case LAGERSOORT_KOGELLAGER:
+        {
+            // Nodige gegevens uitlezen om de equivalente belasting te berekenen (f0 en statisch draaggetal)
+            double f0 = atof(lager.lagergegevens[9]);
+            double C0 = atof(lager.lagergegevens[5]);
+            resultaat = equivalenteBelasting_Kogellager(radiaalkracht, axiaalkracht, f0, C0);
+        }
+        break;
+    
+    default:
+        break;
+    }
+
+
+    return resultaat;
+}
+

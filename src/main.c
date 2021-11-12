@@ -42,6 +42,8 @@ static void veranderlijkeBelasting_btnBereken(char* txtEquivalenteBelasting, cha
 
 static void lagergegevens_btnZoeken(char *zoekterm, char *lijst, gevondenlagers *delagers);
 
+static void equivalenteBelasting_btnBerekenen();
+
 static void grafiekTekenen(void);
 
 static bool GuiValueBox_double(Rectangle bounds, char* text, int textsize, bool editMode, double* value, char* oldText, double minValue, double maxValue);
@@ -322,7 +324,8 @@ int main()
     double equivalenteBelasting_vbAxialeKrachtValue = 0;            // ValueBOx: vbToerental
     char equivalenteBelasting_vbAxialeKrachtText[32] = "0";
     char equivalenteBelasting_oud_vbAxialeKrachtText[32] = "0";
-
+    // TextBox: EquivalenteBelasting
+    char equivalenteBelasting_txtEquivalenteBelastingText[32] = "0";
 
 
 
@@ -578,7 +581,7 @@ int main()
             lagergegevens_Tabelvakken = textvakkenMaken(lagergegevensGekozenLager.aantalGegevens, 2);
 
             strcpy(lagergegevens_lblTypeLager, LagersoortNaarString(lagergegevensGekozenLager.lagersoort));
-            
+
             for(size_t i = 0; i < lagergegevensGekozenLager.aantalGegevens; i++)
             {
                 strcpy(lagergegevens_Tabelvakken[i][0].Text, lagergegevensGekozenLager.kolomtitels[i]);
@@ -783,23 +786,30 @@ int main()
 
             // Equivalente belasting
             //---------------------------------------------------------------------
-            GuiGroupBox((Rectangle){1210, 500, 280,285}, "Equivalente belasting");
+            GuiGroupBox((Rectangle){1210, 500, 280, 285}, "Equivalente belasting");
             // Label
             GuiLabel((Rectangle){1225, 510, 125, 25}, "Radiaalkracht (N):");
             GuiLabel((Rectangle){1225, 535, 125, 25}, "Axiaalkracht (N):");
+            GuiLabel((Rectangle){1225, 589, 125, 25}, "Equivalente belasting (N):");
             // Double Valuebox
-            if (GuiValueBox_double((Rectangle){ 1350, 510, 125, 25 }, equivalenteBelasting_vbRadialeKrachtText, 32, equivalenteBelasting_vbRadialeKrachtEditMode, &equivalenteBelasting_vbRadialeKrachtValue, equivalenteBelasting_oud_vbRadialeKrachtText,0.0, 10000000.0)) equivalenteBelasting_vbRadialeKrachtEditMode = !equivalenteBelasting_vbRadialeKrachtEditMode;
-            if (GuiValueBox_double((Rectangle){ 1350, 535, 125, 25 }, equivalenteBelasting_vbAxialeKrachtText, 32, equivalenteBelasting_vbAxialeKrachtEditMode, &equivalenteBelasting_vbAxialeKrachtValue, equivalenteBelasting_oud_vbAxialeKrachtText,0.0, 10000000.0)) equivalenteBelasting_vbAxialeKrachtEditMode = !equivalenteBelasting_vbAxialeKrachtEditMode;
+            if (GuiValueBox_double((Rectangle){ 1375, 510, 100, 25 }, equivalenteBelasting_vbRadialeKrachtText, 32, equivalenteBelasting_vbRadialeKrachtEditMode, &equivalenteBelasting_vbRadialeKrachtValue, equivalenteBelasting_oud_vbRadialeKrachtText,0.0, 10000000.0)) equivalenteBelasting_vbRadialeKrachtEditMode = !equivalenteBelasting_vbRadialeKrachtEditMode;
+            if (GuiValueBox_double((Rectangle){ 1375, 535, 100, 25 }, equivalenteBelasting_vbAxialeKrachtText, 32, equivalenteBelasting_vbAxialeKrachtEditMode, &equivalenteBelasting_vbAxialeKrachtValue, equivalenteBelasting_oud_vbAxialeKrachtText,0.0, 10000000.0)) equivalenteBelasting_vbAxialeKrachtEditMode = !equivalenteBelasting_vbAxialeKrachtEditMode;
+            // Textbox
+            GuiTextBox((Rectangle){1375, 589, 100, 25}, equivalenteBelasting_txtEquivalenteBelastingText, 32, false);
+            // knop
+            if(lagergegevensGekozenLager.aantalGegevens == 0)
+            {
+                GuiDisable();
+            }
+            if (GuiButton((Rectangle){ 1225, 562, 250, 25}, "Bereken")) equivalenteBelasting_btnBerekenen(lagergegevensGekozenLager, equivalenteBelasting_vbRadialeKrachtValue, equivalenteBelasting_vbAxialeKrachtValue, equivalenteBelasting_txtEquivalenteBelastingText);
+            GuiEnable();
             
-
             // Dropdownboxen moeten op het einde komen
             GuiUnlock(); // ?
             if (GuiDropdownBox((Rectangle){ 175, 200, 150, 25 }, "90%;95%;99%;99,95%", &levensduur_ddbBetrouwbaarheidActive, levensduur_ddbBetrouwbaarheidEditMode)) levensduur_ddbBetrouwbaarheidEditMode = !levensduur_ddbBetrouwbaarheidEditMode;
             if (GuiDropdownBox((Rectangle){ 175, 25, 150, 25 }, "Radiaal Kogellager; Radiaal Rollager; Axiaal Kogellager; Axiaal Rollager", &levensduur_ddbLagerTypeActive, levensduur_ddbLagerTypeEditMode)) levensduur_ddbLagerTypeEditMode = !levensduur_ddbLagerTypeEditMode;
             if (GuiDropdownBox((Rectangle){ 1350, 52, 125, 25}, lagergegevens_ddbGevondenLagerText, &lagergegevens_ddbGevondenLagerActive, lagergegevens_ddbGevondenLagerEditMode)) lagergegevens_ddbGevondenLagerEditMode = !lagergegevens_ddbGevondenLagerEditMode;
             
-            
-            //DrawFPS(20,20);
 
             GuiUnlock();
             //----------------------------------------------------------------------------------
@@ -1007,6 +1017,13 @@ static void lagergegevens_btnZoeken(char *zoekterm, char *lijst, gevondenlagers 
         }
     }
 }
+
+static void equivalenteBelasting_btnBerekenen(lagerinformatie lager, double radiaalkracht, double axiaalkracht, char* resultaat)
+{
+    double belasting = equivalenteBelasting(lager, radiaalkracht, axiaalkracht);
+
+    sprintf(resultaat, "%.2f", belasting);
+} 
 
 /**
  * @brief Tekent de grafiek aan de hand van de ingevulde gegevens
