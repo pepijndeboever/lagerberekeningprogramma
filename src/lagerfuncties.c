@@ -731,11 +731,11 @@ static double equivalenteBelasting_Hoekcontactkogellager(double radiaalkracht, d
     // Indien de verhouding tussen de axiale en radiale kracht kleiner is dan 1,14 is de equivalente belasting gelijk aan de radiale kracht
     if((axiaalkracht/radiaalkracht) <= 1.14)
     {
-        resultaat = radiaalkracht + 0.55 * axiaalkracht;
+        resultaat = radiaalkracht;
     }
     else
     {
-        resultaat = 0.57 * radiaalkracht + 0.93 * axiaalkracht;
+        resultaat = 0.35 * radiaalkracht + 0.57 * axiaalkracht;
     }
 
     return resultaat;
@@ -804,6 +804,7 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
         {
             resultaat = equivalenteBelasting_Hoekcontactkogellager(radiaalkracht, axiaalkracht);
         }
+        // Nog dubbelrijighoekcontactkogellager toevoegen en contacthoek
         case LAGERSOORT_VIERPUNTSLAGER:
         {
             resultaat = equivalenteBelasting_Vierpuntslager(radiaalkracht, axiaalkracht);
