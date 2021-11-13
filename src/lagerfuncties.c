@@ -863,6 +863,23 @@ static double equivalenteBelasting_Cilinderlager(double radiaalkracht, double ax
     return resultaat;    
 }
 
+static double equivalenteBelasting_Kegellager(double radiaalkracht, double axiaalkracht, double e, double Y)
+{
+    double resultaat = 0;
+
+    if((axiaalkracht/radiaalkracht) <= e)
+    {
+        resultaat = radiaalkracht;
+    }
+    else
+    {
+        resultaat = 0.4 * radiaalkracht + Y * axiaalkracht;
+    }
+
+
+    return resultaat;
+}
+
 double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double axiaalkracht)
 {
     double resultaat = 0;
@@ -912,6 +929,13 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
         case LAGERSOORT_CILINDERLAGER:
         {
             resultaat = equivalenteBelasting_Cilinderlager(radiaalkracht, axiaalkracht, lager.lagergegevens[0]);
+        }
+        break;
+        case LAGERSOORT_KEGELLAGER:
+        {
+            double e = atof(lager.lagergegevens[11]);
+            double Y = atof(lager.lagergegevens[12]);
+            resultaat = equivalenteBelasting_Kegellager(radiaalkracht, axiaalkracht, e, Y);
         }
         break;
     default:
