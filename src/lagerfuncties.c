@@ -880,6 +880,11 @@ static double equivalenteBelasting_Kegellager(double radiaalkracht, double axiaa
     return resultaat;
 }
 
+static double equivalenteBelasting_Tonlager(double radiaalkracht, double axiaalkracht)
+{
+    return (radiaalkracht + 9.5 * axiaalkracht);
+}
+
 double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double axiaalkracht)
 {
     double resultaat = 0;
@@ -936,6 +941,11 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
             double e = atof(lager.lagergegevens[11]);
             double Y = atof(lager.lagergegevens[12]);
             resultaat = equivalenteBelasting_Kegellager(radiaalkracht, axiaalkracht, e, Y);
+        }
+        break;
+        case LAGERSOORT_TONLAGER:
+        {
+            resultaat = equivalenteBelasting_Tonlager(radiaalkracht, axiaalkracht);
         }
         break;
     default:
