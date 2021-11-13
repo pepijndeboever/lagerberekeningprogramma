@@ -827,6 +827,42 @@ static double equivalenteBelasting_ZichInstellendKogellager(double radiaalkracht
     return resultaat;
 }
 
+static double equivalenteBelasting_Cilinderlager(double radiaalkracht, double axiaalkracht, char* lagernaam)
+{
+    double resultaat;
+    double e;
+    double Y;
+    // Indien het lager begint met NJ2, NUP2, NJ3, NUP3 of NJ4, is e 0.2 en Y 0.6
+    // Indine het lager begint met NJ22, NUP22, NJ23 of NUP23, is e 0.3 en Y 0.4
+    if((strstr(lagernaam, "NJ22") != NULL) ||  (strstr(lagernaam, "NUP22") != NULL) || (strstr(lagernaam, "NJ23") != NULL) || (strstr(lagernaam, "NUP23") != NULL))
+    {
+        e = 0.3;
+        Y = 0.4;
+    }
+    else if((strstr(lagernaam, "NJ2") != NULL) ||  (strstr(lagernaam, "NUP2") != NULL) || (strstr(lagernaam, "NJ3") != NULL) || (strstr(lagernaam, "NUP3") != NULL) || (strstr(lagernaam, "NJ4") != NULL))
+    {
+        e = 0.2;
+        Y = 0.6;
+    }
+    else
+    {
+        // Geen lager met spoorkraag
+        e = 100; // Axiale kracht kan niet worden opgevangen dus berekening is niet relevant
+        Y = 0;
+    }
+
+    if((axiaalkracht/radiaalkracht) <= e)
+    {
+        resultaat = radiaalkracht;
+    }
+    else
+    {
+        resultaat = 0.92 * radiaalkracht + Y * axiaalkracht;
+    }
+
+    return resultaat;    
+}
+
 double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double axiaalkracht)
 {
     double resultaat = 0;
@@ -871,6 +907,11 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
             double Y1 = atof(lager.lagergegevens[10]);
             double Y2 = atof(lager.lagergegevens[11]);
             resultaat = equivalenteBelasting_ZichInstellendKogellager(radiaalkracht, axiaalkracht, e, Y1, Y2);
+        }
+        break;
+        case LAGERSOORT_CILINDERLAGER:
+        {
+            resultaat = equivalenteBelasting_Cilinderlager(radiaalkracht, axiaalkracht, lager.lagergegevens[0]);
         }
         break;
     default:
