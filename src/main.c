@@ -185,7 +185,7 @@ int main()
     char smering_oud_vbBinnendiameterText[32] = "0";
     // Textbox: Gemiddelde Diameter
     bool smering_txtGemiddeldeDiameterEditMode = false;
-    char smering_txtGemiddeldeDiameterText[32] = "";            // TextBox: txtGemiddeldeDiameter
+    char smering_txtGemiddeldeDiameterText[32] = "0";            // TextBox: txtGemiddeldeDiameter
     // ValueBox: Toerental
     bool smering_vbToerentalSmeringEditMode = false;
     double smering_vbToerentalSmeringValue = 0.0;            // ValueBOx: vbToerentalSmering
@@ -786,7 +786,7 @@ int main()
 
             // Equivalente belasting
             //---------------------------------------------------------------------
-            GuiGroupBox((Rectangle){1210, 500, 280, 285}, "Equivalente belasting");
+            GuiGroupBox((Rectangle){1210, 500, 280, 124}, "Equivalente belasting");
             // Label
             GuiLabel((Rectangle){1225, 510, 125, 25}, "Radiaalkracht (N):");
             GuiLabel((Rectangle){1225, 535, 125, 25}, "Axiaalkracht (N):");
