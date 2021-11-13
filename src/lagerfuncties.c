@@ -898,6 +898,11 @@ static double equivalenteBelasting_DubbelrijigTonlager(double radiaalkracht, dou
     return resultaat;
 }
 
+static double equivalenteBelasting_Carblager(double radiaalkracht)
+{
+    return radiaalkracht;
+}
+
 double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double axiaalkracht)
 {
     double resultaat = 0;
@@ -968,6 +973,11 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
             double Y1 = atof(lager.lagergegevens[10]);
             double Y2 = atof(lager.lagergegevens[11]);
             resultaat = equivalenteBelasting_DubbelrijigTonlager(radiaalkracht, axiaalkracht, e, Y1, Y2);
+        }
+        break;
+        case LAGERSOORT_CARBLAGER:
+        {
+            resultaat = equivalenteBelasting_Carblager(radiaalkracht);
         }
         break;
     default:
