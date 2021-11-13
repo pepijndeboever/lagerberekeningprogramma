@@ -741,6 +741,56 @@ static double equivalenteBelasting_Hoekcontactkogellager(double radiaalkracht, d
     return resultaat;
 }
 
+static double equivalenteBelasting_Dubbelrijighoekcontactkogellager(double radiaalkracht, double axiaalkracht, int contacthoek)
+{
+    double resultaat = 0;
+    switch(contacthoek)
+    {
+        case 25:
+            if((axiaalkracht/radiaalkracht) <= 0.68)
+            {
+                resultaat = radiaalkracht + 0.92 * axiaalkracht;
+            }
+            else
+            {
+                resultaat = 0.67 * radiaalkracht + 1.41 * axiaalkracht;
+            }
+        break;
+        case 30:
+            if((axiaalkracht/radiaalkracht) <= 0.8)
+            {
+                resultaat = radiaalkracht + 0.78 * axiaalkracht;
+            }
+            else
+            {
+                resultaat = 0.63 * radiaalkracht + 1.24 * axiaalkracht;
+            }
+        break;
+        case 35:
+            if((axiaalkracht/radiaalkracht) <= 0.95)
+            {
+                resultaat = radiaalkracht + 0.66 * axiaalkracht;
+            }
+            else
+            {
+                resultaat = 0.6 * radiaalkracht + 1.07 * axiaalkracht;
+            }
+        break;
+        case 45:
+            if((axiaalkracht/radiaalkracht) <= 1.34)
+            {
+                resultaat = radiaalkracht + 0.47 * axiaalkracht;
+            }
+            else
+            {
+                resultaat = 0.54 * radiaalkracht + 0.81 * axiaalkracht;
+            }
+        break;
+    }
+
+    return resultaat;
+}
+
 static double equivalenteBelasting_Vierpuntslager(double radiaalkracht, double axiaalkracht)
 {
     double resultaat = 0;
@@ -804,7 +854,12 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
         {
             resultaat = equivalenteBelasting_Hoekcontactkogellager(radiaalkracht, axiaalkracht);
         }
-        // Nog dubbelrijighoekcontactkogellager toevoegen en contacthoek
+        case LAGERSOORT_DUBBELRIJIGHOEKCONTACTKOGELLAGER:
+        {
+            int contacthoek = atoi(lager.lagergegevens[9]);
+            resultaat = equivalenteBelasting_Dubbelrijighoekcontactkogellager(radiaalkracht, axiaalkracht, contacthoek);
+        }
+        break;
         case LAGERSOORT_VIERPUNTSLAGER:
         {
             resultaat = equivalenteBelasting_Vierpuntslager(radiaalkracht, axiaalkracht);
