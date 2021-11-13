@@ -233,7 +233,6 @@ double samengesteldeBelasting(double statisch, double dynamisch, double exponent
     return resultaat;
 }
 
-
 double NodigeViscositeit(double gemiddeldediameter, double toerental)
 {
     if(toerental < 1000)
@@ -245,6 +244,7 @@ double NodigeViscositeit(double gemiddeldediameter, double toerental)
         return 4500 * pow(toerental, -0.5) * pow(gemiddeldediameter, -0.5);
     }
 }
+
 
 static bool ExactZoeken_EersteRij = true;
 static bool ExactZoeken_EersteCel = true;
@@ -435,9 +435,6 @@ lagerinformatie ExactZoeken(char* zoekterm)
 
     return lager;
 }
-
-
-
 
 
 static bool LagersZoeken_EersteCel = true;
@@ -885,6 +882,22 @@ static double equivalenteBelasting_Tonlager(double radiaalkracht, double axiaalk
     return (radiaalkracht + 9.5 * axiaalkracht);
 }
 
+static double equivalenteBelasting_DubbelrijigTonlager(double radiaalkracht, double axiaalkracht, double e, double Y1, double Y2)
+{
+    double resultaat;
+
+    if((axiaalkracht/radiaalkracht) <= e)
+    {
+        resultaat = radiaalkracht + Y1 * axiaalkracht;
+    }
+    else
+    {
+        resultaat = 0.67 * radiaalkracht + Y2 * axiaalkracht;
+    }
+
+    return resultaat;
+}
+
 double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double axiaalkracht)
 {
     double resultaat = 0;
@@ -912,6 +925,7 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
         {
             resultaat = equivalenteBelasting_Hoekcontactkogellager(radiaalkracht, axiaalkracht);
         }
+        break;
         case LAGERSOORT_DUBBELRIJIGHOEKCONTACTKOGELLAGER:
         {
             int contacthoek = atoi(lager.lagergegevens[9]);
@@ -946,6 +960,14 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
         case LAGERSOORT_TONLAGER:
         {
             resultaat = equivalenteBelasting_Tonlager(radiaalkracht, axiaalkracht);
+        }
+        break;
+        case LAGERSOORT_DUBBELRIJIGTONLAGER:
+        {
+            double e = atof(lager.lagergegevens[9]);
+            double Y1 = atof(lager.lagergegevens[10]);
+            double Y2 = atof(lager.lagergegevens[11]);
+            resultaat = equivalenteBelasting_DubbelrijigTonlager(radiaalkracht, axiaalkracht, e, Y1, Y2);
         }
         break;
     default:
