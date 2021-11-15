@@ -63,32 +63,6 @@ static struct textvak** TekstvakRijToevoegen(struct textvak** oudtextvak, int ou
 
 static void GuiTabel(int locatieX, int locatieY, int rijen, int kolommen, int breedtetextvak, int hoogtetextvak, struct textvak** vakken);
 
-static double interpoleer(double x1, double y1, double x2, double y2, double xvraag);
-
-static double toerentalfunctie_intern(double x, void* argumenten);
-
-static double belastingsfunctie_intern(double x, const double* argumenten);
-
-static double bovensteLidVeranderlijkeBelasting_intern(double x,  void* argumenten);
-
-struct argumenten_bovensteLid
-{
-    double exponent;
-    bool aISOBerekenen;
-    int lagerType;
-    double referentieViscositeit;
-    double werkingsTemperatuur;
-    double fatigueLoadLimit;
-    double properheid;
-    double gemiddeldeDiameter;
-};
-
-struct IngevuldeGegevens
-{
-    double tijdstip;
-    double toerental;
-    double belasting;
-};
 
 //----------------------------------------------------------------------------------
 // Global variables
@@ -108,7 +82,7 @@ static int lagergegevens_kolommen = 2;
 
 
 // [rij][gegevenstype = tijd; toerental; belastig]
-static struct IngevuldeGegevens veranderlijkeBelasting_IngevuldeGegevens[100]; // Waarschijnlijk zullen er nooit meer dan 100 rijen worden ingevuld. Kan ook met malloc gebeuren, maar dat is te veel werk.
+static struct veranderlijkeBelasting_procesgegevens veranderlijkeBelasting_IngevuldeGegevens[100]; // Waarschijnlijk zullen er nooit meer dan 100 rijen worden ingevuld. Kan ook met malloc gebeuren, maar dat is te veel werk.
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -904,7 +878,7 @@ static void veranderlijkeBelasting_btnReset(void)
  * 
  * @param txtEquivalenteBelasting 
  * @param txtGemiddeldToerental 
- * @param gekozenlager 
+ * @param gekozenlager // 0 = kogellager, 1= cilinderlager, 2 = kogeltaatslager, 3 = cilindertaatslager// Komt toevallig overeen met lagertype
  * @param aisoberekenen 
  * @param referentieviscositeit 
  * @param temperatuur 
@@ -914,68 +888,28 @@ static void veranderlijkeBelasting_btnReset(void)
  */
 static void veranderlijkeBelasting_btnBereken(char* txtEquivalenteBelasting, char* txtGemiddeldToerental, int gekozenlager, bool aisoberekenen, double referentieviscositeit, double temperatuur, double fatigueloadlimit, double properheid, double gemiddeldediameter)
 {
-    // Enkel berekenen indien er meer dan twee gegevens zijn ingevuld
+   // Enkel berekenen indien er 2 rijen of meer zijn zijn
     if(veranderlijkeBelasting_Rijen >= 2)
     {
-        double exponent = 3.0;
-
-        // Het totale aantal omwentelingen berekenen (in (n/min)*s)
-        double aantalOmwentelingen, error;
-        
-        // Berekenen van integraal
-        // Werkruimte aanmaken
-        gsl_integration_workspace* werkruimte = gsl_integration_workspace_alloc(1024);
-
-        // GSL functie aanmaken. Geen parameter voor het toerental
-        gsl_function F;
-        F.function = &toerentalfunctie_intern; // Geen parameters
-
-        // Integraal berekenen
-        gsl_integration_qag(&F, veranderlijkeBelasting_IngevuldeGegevens[0].tijdstip, veranderlijkeBelasting_IngevuldeGegevens[veranderlijkeBelasting_Rijen - 1].tijdstip, 0, 1e-7, 1024, 1, werkruimte, &aantalOmwentelingen, &error);
-
-        // Gemiddeld toerental bepalen
-        sprintf(txtGemiddeldToerental, "%.2f", aantalOmwentelingen / (veranderlijkeBelasting_IngevuldeGegevens[veranderlijkeBelasting_Rijen - 1].tijdstip - veranderlijkeBelasting_IngevuldeGegevens[0].tijdstip));
-
-        // Exponent bepalen
-        if (gekozenlager == 1 || gekozenlager == 3)
-        {
-            exponent = 10.0/3.0;
-        }
-        
-        double belastingEnToerental; // Error en werkruimte zullen waarschijnlijk wel kunnen worden hergebruikt.
-        
-
-        // functie aanpassen om bovenste lid te berekenen
-        F.function = &bovensteLidVeranderlijkeBelasting_intern;
-        struct argumenten_bovensteLid parameters;
-        // Argumenten aanmaken
-        parameters.aISOBerekenen = aisoberekenen;
-        parameters.exponent = exponent;
-
+        // Struct gereedmaken
+        veranderlijkeBelasting_argumenten argumenten;
+        argumenten.lagertype = gekozenlager;
+        argumenten.aisoBerekenen = aisoberekenen;
         if(aisoberekenen)
         {
-            // Enkel nodig indien aiso moet worden berekend
-            parameters.fatigueLoadLimit = fatigueloadlimit;
-            parameters.gemiddeldeDiameter = gemiddeldediameter;
-            parameters.lagerType = gekozenlager;
-            parameters.properheid = properheid;
-            parameters.referentieViscositeit = referentieviscositeit;
-            parameters.werkingsTemperatuur = temperatuur;
+            argumenten.referentieviscositeit = referentieviscositeit;
+            argumenten.gemiddeldediameter = gemiddeldediameter;
+            argumenten.werkingstemperatuur = temperatuur;
+            argumenten.fatigueloadlimit = fatigueloadlimit;
+            argumenten.properheid = properheid;
         }
 
-        F.params = &parameters;
-        
-        // Integraal berekenen. Oude werkruimte wordt hergebruikt
-        gsl_integration_qag(&F, veranderlijkeBelasting_IngevuldeGegevens[0].tijdstip, veranderlijkeBelasting_IngevuldeGegevens[veranderlijkeBelasting_Rijen - 1].tijdstip, 0, 1e-7, 1024, 1, werkruimte, &belastingEnToerental, &error);
-        
-        
-        // Werkruimte verwijderen
-        gsl_integration_workspace_free(werkruimte);
+        double gemiddeldToerental;
+        double belasting = veranderlijkeBelasting_Tabel(veranderlijkeBelasting_IngevuldeGegevens, veranderlijkeBelasting_Rijen, argumenten, &gemiddeldToerental);
 
-
-        double resultaat = pow(belastingEnToerental / aantalOmwentelingen, 1 / exponent);
-
-        sprintf(txtEquivalenteBelasting, "%.2f", resultaat);
+        // Gevonden gegevens weergeven
+        sprintf(txtEquivalenteBelasting, "%.2f", belasting);
+        sprintf(txtGemiddeldToerental, "%.2f", gemiddeldToerental);
     }
 }
 
@@ -1109,112 +1043,6 @@ static void grafiekTekenen(void)
 }
 
 /**
- * @brief Geeft het toerental op het gegeven tijdstip
- * Voor intern gebruik met integraal
- * @return double 
- */
-double toerentalfunctie_intern(double x, __attribute__ ((unused)) void* argumenten)
-{
-    // Pakt dat de grenzen [100;120[ zijn inclusieve ondergrens
-    // De gegevens bestaan uit vakken. Het aantal vakken is één minder dan het aantal rijen. 
-    // Binnen de boven en ondergrens van zo een vak moet er worden geïnterpoleerd. Vermits er wordt vanuit gegaan dat het een lineair verband is
-    
-    // Eerst moet er worden bepaald in wel vak men zich bevindt
-    int vak = 0;
-    while (x > veranderlijkeBelasting_IngevuldeGegevens[vak + 1].tijdstip)
-    {
-        // zolang de ingevulde tijd groter is dan de bovengrens van het vak, moet men het vak vermeerderen 
-        vak++;
-    } // Er is bepaald in welk vak men zit
-
-    // De waarde interpoleren die men nodig heeft
-
-    return interpoleer(veranderlijkeBelasting_IngevuldeGegevens[vak].tijdstip, veranderlijkeBelasting_IngevuldeGegevens[vak].toerental, veranderlijkeBelasting_IngevuldeGegevens[vak+1].tijdstip,veranderlijkeBelasting_IngevuldeGegevens[vak + 1].toerental, x);
-}
-
-/**
- * @brief Geeft de belasting op het gegeven tijdstip
- * Voor intern gebruik met integraal
- * @return double 
- */
-static double belastingsfunctie_intern(double x, __attribute__ ((unused)) const double* argumenten)
-{
-    // Pakt dat de grenzen [100;120[ zijn inclusieve ondergrens
-    // De gegevens bestaan uit vakken. Het aantal vakken is één minder dan het aantal rijen. 
-    // Binnen de boven en ondergrens van zo een vak moet er worden geïnterpoleerd. Vermits er wordt vanuit gegaan dat het een lineair verband is
-    
-    // Eerst moet er worden bepaald in wel vak men zich bevindt
-    int vak = 0;
-    while (x > veranderlijkeBelasting_IngevuldeGegevens[vak + 1].tijdstip)
-    {
-        // zolang de ingevulde tijd groter is dan de bovengrens van het vak, moet men het vak vermeerderen 
-        vak++;
-    } // Er is bepaald in welk vak men zit
-
-    // De waarde interpoleren die men nodig heeft
-
-    return interpoleer(veranderlijkeBelasting_IngevuldeGegevens[vak].tijdstip,veranderlijkeBelasting_IngevuldeGegevens[vak].belasting, veranderlijkeBelasting_IngevuldeGegevens[vak+1].tijdstip ,veranderlijkeBelasting_IngevuldeGegevens[vak + 1].belasting, x);
-}
-
-/**
- * @brief Functie die wordt gebruikt om de veranderlijke belasting te berekenen
- * @param x Veranderlijke X-waarde
- * @param argumenten 
- * Argument 0 = exponent
- * Argument 1 = Aiso Berekenen (0.0 = nee; 1.0 = ja)
- * Argument 2 = Lagertype (0.0 = Radiaal kogel; 1.0 = Radiaal rol; 2.0 = axiaal kogel; 3.0 = axiaal rol)
- * Argument 3 = Referentieviscositeit
- * Argument 4 = Werkingstemperatuur
- * Argument 5 = Fatigue load limit
- * Argument 6 = Properheid
- * Argument 7 = Gemiddelde diameter
- * @return double 
- */
-static double bovensteLidVeranderlijkeBelasting_intern(double x, void* argumenten)
-{   
-    double aiso = 1.0;
-    double toerental = toerentalfunctie_intern(x, NULL);
-    double belasting = belastingsfunctie_intern(x, NULL);
-
-    // Meegegeven argumenten ophalen
-    struct argumenten_bovensteLid* parameters = (struct argumenten_bovensteLid*)argumenten;
-
-
-    // Aiso factor kan hierin worden berekend, aangezien dit nergens anders nodig kan zijn en men dan geen argumenten moet doorgeven naar een andere functie
-    if(parameters->aISOBerekenen)
-    {   
-        enum lagertype lager = RADIAAL_KOGEL;
-        switch (parameters->lagerType)
-        {
-        //case 0: // Standaard toch al dit
-        //    lager = RADIAAL_KOGEL;
-        //    break;
-        case 1:
-            lager = RADIAAL_CILINDER;
-            break;
-        case 2:
-            lager = AXIAAL_KOGEL;
-            break;
-        case 3:
-            lager = AXIAAL_CILINDER;
-            break;
-        }
-
-        // Viscositeit bepalen
-        double nodigeViscositeit = NodigeViscositeit(parameters->gemiddeldeDiameter, toerental);
-        double effectieveViscositeit = viscositeitOpTemperatuur(parameters->referentieViscositeit, parameters->werkingsTemperatuur);
-        double smeringsverhouding = effectieveViscositeit/nodigeViscositeit;
-
-
-        aiso = aiso_correctiefactor(lager, parameters->properheid, parameters->fatigueLoadLimit, belasting, smeringsverhouding);
-    }
-
-
-    // NULL omdat er geen extra argumenten naar de functies moeten. Niet ideaal, maar nodig voor de integraalfunctie. Eigenlijk niet echt, maar het is wel uniformer
-    return (1.0/aiso) * toerental * pow(belastingsfunctie_intern(x, NULL), parameters->exponent);
-}
-
-/**
  * @brief Creëert een textvak[rij][kolom] van de opgegeven grootte en breedte en wijst er geheugen voor toe
  * Geeft de pointer van dubbele array terug. Kan direct worden gebruikt
  * @param rij aantal rijen
@@ -1311,21 +1139,6 @@ static struct textvak** TekstvakRijToevoegen(struct textvak** oudtextvak, int ou
     }
     
     return nieuwTextvak;
-}
-
-/**
- * @brief Geeft de geïnterpoleerde Y waarde terug
- * 
- * @param x1 X-waarde 1 (punt 1)
- * @param y1 Y-waarde 1 (punt 1)
- * @param x2 X-waarde 2 (punt 2)
- * @param y2 Y-waarde 2 (punt 2)
- * @param xvraag X-waarde waarvan de Y-waarde moet worden berekend
- * @return double 
- */
-static double interpoleer(double x1, double y1, double x2, double y2, double xvraag)
-{
-    return (y2 - y1)/(x2 - x1)*(xvraag - x1) + y1;
 }
 
 /**

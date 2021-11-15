@@ -10,6 +10,7 @@
 #define DEPRECATED(func) func
 #endif
 
+#include <stdbool.h>
 
 enum tijdsbasis
 {
@@ -41,6 +42,17 @@ enum lagersoort
     LAGERSOORT_CARBLAGER
 };
 
+typedef struct veranderlijkeBelasting_argumenten
+{
+    enum lagertype lagertype;
+    bool aisoBerekenen;
+    double referentieviscositeit;
+    double gemiddeldediameter;
+    double werkingstemperatuur;
+    double fatigueloadlimit;
+    double properheid;
+    void* overigeArgumenten;
+} veranderlijkeBelasting_argumenten;
 
 /**
  * @brief Berekend de standaard lagerlevensduur in miljoen omwentelingen
@@ -114,3 +126,16 @@ void free_gevondenlagers(gevondenlagers* lagers);
 void free_lagerinformatie(lagerinformatie* lager);
 
 double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double axiaalkracht);
+
+double veranderlijkeBelasting_Functie(double (*toerentalfunctie)(double, void*), double (*belastingsfunctie)(double, void*), double ondergrens, double bovengrens, veranderlijkeBelasting_argumenten argumenten, double* uitkomstgemiddeldtoerental);
+
+double interpoleer(double x1, double y1, double x2, double y2, double xvraag);
+
+struct veranderlijkeBelasting_procesgegevens
+{
+    double tijdstip;
+    double toerental;
+    double belasting;
+};
+
+double veranderlijkeBelasting_Tabel(struct veranderlijkeBelasting_procesgegevens* gegevens, int aantalgegevens, veranderlijkeBelasting_argumenten argemunten, double* uitkomstgemiddeldtoerental);

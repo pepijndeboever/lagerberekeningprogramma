@@ -988,3 +988,182 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
     return resultaat;
 }
 
+
+struct veranderlijkeBelasting_InterneArgumenten
+{
+    double (*toerentalfunctie)(double, void*);
+    double (*belastingsfunctie)(double, void*);
+    veranderlijkeBelasting_argumenten argumenten;
+};
+
+static double veranderlijkeBelasting_Functie_Intern(double x, void* argumenten)
+{
+    struct veranderlijkeBelasting_InterneArgumenten* parameters = argumenten;
+    
+    // Toerental bepalen:
+    double toerental = parameters->toerentalfunctie(x, &parameters->argumenten);
+    // Belasting bepalen:
+    double belasting = parameters->belastingsfunctie(x, &parameters->argumenten);
+    // controleren of er een aiso factor moet worden berekend:
+    
+    double aiso = 1.0;
+    
+    if(parameters->argumenten.aisoBerekenen == true)
+    {
+        // Aiso bepalen
+        // Viscositeit bepalen
+        double nodigeViscositeit = NodigeViscositeit(parameters->argumenten.gemiddeldediameter, toerental);
+        double effectieveViscositeit = viscositeitOpTemperatuur(parameters->argumenten.referentieviscositeit, parameters->argumenten.werkingstemperatuur);
+        double smeringsverhouding = effectieveViscositeit/nodigeViscositeit;
+        aiso = aiso_correctiefactor(parameters->argumenten.lagertype, parameters->argumenten.properheid, parameters->argumenten.fatigueloadlimit, belasting, smeringsverhouding);
+    }
+    
+    // Exponent bepalen
+    double exponent = 3;
+    if(parameters->argumenten.lagertype == RADIAAL_CILINDER || parameters->argumenten.lagertype == AXIAAL_CILINDER)
+    {
+        exponent = (10.0/3.0);
+    }
+
+    return ((1/aiso)*toerental*pow(belasting, exponent));
+}
+
+double veranderlijkeBelasting_Functie(double (*toerentalfunctie)(double, void*), double (*belastingsfunctie)(double, void*), double ondergrens, double bovengrens, veranderlijkeBelasting_argumenten argemunten, double* uitkomstgemiddeldtoerental)
+{
+    double resultaat = 0;
+
+    // Totaal aantal omwentelingen berekenen in ((n/min)*s)
+    double aantalOmwentelingen, error;
+
+    // Berekenen van integraal
+    // Werkruimte aanmaken
+    gsl_integration_workspace* werkruimte = gsl_integration_workspace_alloc(1024);
+
+    // GSL functie aanmaken. Geen parameter voor het toerental
+    gsl_function F;
+    F.function = toerentalfunctie;
+    F.params = &argemunten;
+
+    // Integraal berekenen
+    gsl_integration_qag(&F, ondergrens, bovengrens, 0, 1e-7, 1024, 1, werkruimte, &aantalOmwentelingen, &error);
+
+
+    // Bovenste lid functie berekenen
+    double resultaatBovenstelid;
+
+    // GSl kan worden hergebruikt
+    // struct maken
+    struct veranderlijkeBelasting_InterneArgumenten interneargumenten;
+    interneargumenten.argumenten = argemunten;
+    interneargumenten.toerentalfunctie = toerentalfunctie;
+    interneargumenten.belastingsfunctie = belastingsfunctie;
+    
+    // Functie gereedmaken
+    F.function = &veranderlijkeBelasting_Functie_Intern;
+    F.params = &interneargumenten;
+
+    // Integraal berekenen. Oude werkruimte wordt hergebruikt
+    gsl_integration_qag(&F, ondergrens, bovengrens, 0, 1e-7, 1024, 1, werkruimte, &resultaatBovenstelid, &error);
+        
+        
+    // Werkruimte verwijderen
+    gsl_integration_workspace_free(werkruimte);
+
+    // Controleren of het gemiddeld toerental moet worden bepaald
+    if(uitkomstgemiddeldtoerental != NULL)
+    {
+        double gemiddeldToerental = aantalOmwentelingen/(bovengrens-ondergrens);
+
+        *uitkomstgemiddeldtoerental = gemiddeldToerental;
+    }
+
+    // Resultaat berekenen
+    // Exponent bepalen
+    double exponent = 3;
+    if(argemunten.lagertype == RADIAAL_CILINDER || argemunten.lagertype == AXIAAL_CILINDER)
+    {
+        exponent = (10.0/3.0);
+    }
+    
+    resultaat = pow(resultaatBovenstelid/aantalOmwentelingen, 1.0/exponent);
+
+
+    return resultaat;
+}
+
+/**
+ * @brief Geeft de geïnterpoleerde Y waarde terug
+ * 
+ * @param x1 X-waarde 1 (punt 1)
+ * @param y1 Y-waarde 1 (punt 1)
+ * @param x2 X-waarde 2 (punt 2)
+ * @param y2 Y-waarde 2 (punt 2)
+ * @param xvraag X-waarde waarvan de Y-waarde moet worden berekend
+ * @return double 
+ */
+double interpoleer(double x1, double y1, double x2, double y2, double xvraag)
+{
+    return (y2 - y1)/(x2 - x1)*(xvraag - x1) + y1;
+}
+
+struct veranderlijkeBelasting_procesgegevens* Procesverloop;
+int AantalGegevens;
+
+static double veranderlijkeBelasting_Tabel_Toerentalfunctie(double x, void* argumenten)
+{
+    // Pakt dat de grenzen [100;120[ zijn inclusieve ondergrens
+    // De gegevens bestaan uit vakken. Het aantal vakken is één minder dan het aantal rijen. 
+    // Binnen de boven en ondergrens van zo een vak moet er worden geïnterpoleerd. Vermits er wordt vanuit gegaan dat het een lineair verband is
+    
+    // Eerst moet er worden bepaald in wel vak men zich bevindt
+    int vak = 0;
+    while (x > Procesverloop[vak + 1].tijdstip)
+    {
+        // zolang de ingevulde tijd groter is dan de bovengrens van het vak, moet men het vak vermeerderen 
+        vak++;
+    } // Er is bepaald in welk vak men zit
+
+    // De waarde interpoleren die men nodig heeft
+
+    return interpoleer(Procesverloop[vak].tijdstip, Procesverloop[vak].toerental, Procesverloop[vak+1].tijdstip, Procesverloop[vak + 1].toerental, x);
+}
+
+static double veranderlijkeBelasting_Tabel_Belastingsfunctie(double x, void* argumenten)
+{
+    // Pakt dat de grenzen [100;120[ zijn inclusieve ondergrens
+    // De gegevens bestaan uit vakken. Het aantal vakken is één minder dan het aantal rijen. 
+    // Binnen de boven en ondergrens van zo een vak moet er worden geïnterpoleerd. Vermits er wordt vanuit gegaan dat het een lineair verband is
+    
+    // Eerst moet er worden bepaald in wel vak men zich bevindt
+    int vak = 0;
+    while (x > Procesverloop[vak + 1].tijdstip)
+    {
+        // zolang de ingevulde tijd groter is dan de bovengrens van het vak, moet men het vak vermeerderen 
+        vak++;
+    } // Er is bepaald in welk vak men zit
+
+    // De waarde interpoleren die men nodig heeft
+
+    return interpoleer(Procesverloop[vak].tijdstip, Procesverloop[vak].belasting, Procesverloop[vak+1].tijdstip, Procesverloop[vak + 1].belasting, x);
+}
+
+double veranderlijkeBelasting_Tabel(struct veranderlijkeBelasting_procesgegevens* gegevens, int aantalgegevens, veranderlijkeBelasting_argumenten argemunten, double* uitkomstgemiddeldtoerental)
+{
+    // De procesgegevens opslaan in de global variabele
+    Procesverloop = gegevens;
+    AantalGegevens = aantalgegevens;
+
+    // Onder en bovengrens bepalen
+    double ondergrens = gegevens[0].tijdstip;
+    double bovengrens = gegevens[aantalgegevens - 1].tijdstip;
+
+    double gemiddeldToerental;
+    double equivalenteBelasting = veranderlijkeBelasting_Functie(veranderlijkeBelasting_Tabel_Toerentalfunctie, veranderlijkeBelasting_Tabel_Belastingsfunctie, ondergrens, bovengrens, argemunten, &gemiddeldToerental);
+
+    if(uitkomstgemiddeldtoerental != NULL)
+    {
+        *uitkomstgemiddeldtoerental = gemiddeldToerental;
+    }
+    
+    return equivalenteBelasting;
+}
