@@ -12,17 +12,16 @@
 *
 **********************************************************************************************/
 /**
- * Dropdownboxen vervangen door comboboxen
  * malloc veranderen door realloc
  * Veranderlijke belasting ingevulde gegevens nog aanpassen naar realloc in plaats van initialiseren met 100
  * https://github.com/oz123/awesome-c
+ * Algemene naamgeving verbeteren
  */
 
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <raylib.h>
-#include <gsl/gsl_integration.h>
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 #include "lagerfuncties.h"
@@ -72,17 +71,13 @@ static void GuiTabel(int locatieX, int locatieY, int rijen, int kolommen, int br
 static struct textvak** veranderlijkeBelasting_Tabelvakken; // [rij][kolom](gegevenstype = tijd; toerental; belastig)
 static int veranderlijkeBelasting_Rijen = 0;
 static int veranderlijkeBelasting_Kolommen = 3;
+// [rij][gegevenstype = tijd; toerental; belastig]
+static struct veranderlijkeBelasting_procesgegevens veranderlijkeBelasting_IngevuldeGegevens[100]; // Waarschijnlijk zullen er nooit meer dan 100 rijen worden ingevuld. Kan ook met malloc gebeuren, maar dat is te veel werk.
 
 // tabel lagergegevens
 static struct textvak** lagergegevens_Tabelvakken;
 static int lagergegevens_Rijen = 0;
 static int lagergegevens_kolommen = 2;
-
-
-
-
-// [rij][gegevenstype = tijd; toerental; belastig]
-static struct veranderlijkeBelasting_procesgegevens veranderlijkeBelasting_IngevuldeGegevens[100]; // Waarschijnlijk zullen er nooit meer dan 100 rijen worden ingevuld. Kan ook met malloc gebeuren, maar dat is te veel werk.
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -451,14 +446,7 @@ int main()
 
             if(gemiddeldeDiameter_Berekend > 0 && smering_vbToerentalSmeringValue > 0)
             {
-                if(smering_vbToerentalSmeringValue < 1000)
-                {
-                    nodigeViscositeit_Berekend = 45000 * pow(smering_vbToerentalSmeringValue, -0.83) * pow(gemiddeldeDiameter_Berekend, -0.5);
-                }
-                else // groter of gelijk aan 1000
-                {
-                    nodigeViscositeit_Berekend = 4500 * pow(smering_vbToerentalSmeringValue, -0.5) * pow(gemiddeldeDiameter_Berekend, -0.5);
-                }
+                nodigeViscositeit_Berekend = NodigeViscositeit(gemiddeldeDiameter_Berekend, smering_vbToerentalSmeringValue);
             }
             else
             {
@@ -1241,5 +1229,3 @@ static void GuiTabel(int locatieX, int locatieY, int rijen, int kolommen, int br
         }
     }
 }
-
-

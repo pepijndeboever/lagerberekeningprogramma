@@ -4,16 +4,11 @@ project(Lagerberekening VERSION 0.1.0)
 #include(CTest)
 #enable_testing()
 
-#set(CMAKE_C_COMPILER icc)
+#set(CMAKE_C_COMPILER tcc)
 
 
 # Build flags
-if(UNIX)
 add_compile_options(-Wall -Wextra -pedantic -march=native -std=c2x) # nog -O3 -Ofast toevoegen of -O2; -Og voor debuggen
-endif(UNIX)
-if(MSVC)
-add_compile_definitions(WINNI)
-endif(MSVC)
 
 #set(CMAKE_EXE_LINKER_FLAGS -static)
 
