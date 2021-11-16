@@ -170,7 +170,7 @@ double viscositeitOpTemperatuur(double referentieviscositeit, double werkingstem
     return berekendeViscositeit; 
 }
 
-
+// Wordt gebruikt voor de interne berekening van de samengestelde centrifugaalbelasting om deze factoren door te geven naar de functie waar een integraal van wordt genomen
 struct samengesteldeBelasting_argumenten
 {
     double statischeKracht;
@@ -233,6 +233,13 @@ double samengesteldeBelasting(double statisch, double dynamisch, double exponent
     return resultaat;
 }
 
+/**
+ * @brief Berekent de nodige viscositeit voor de smering van het lager in werking aan de hand van de gemiddelde diameter en het toerental
+ * 
+ * @param gemiddeldediameter Gemiddelde diameter van het lager in mm (d+D)/2
+ * @param toerental Het toerental waaraan het lager draait in n/min
+ * @return De nodige viscositeit in het lager in mm²/s
+ */
 double NodigeViscositeit(double gemiddeldediameter, double toerental)
 {
     if(toerental < 1000)
@@ -375,6 +382,13 @@ static lagerinformatie ExactZoeken_Intern(char* zoekterm, unsigned char* tabel, 
     }
 }
 
+/**
+ * @brief Gaat een lager zoeken, waarvan de designatie exact overeenkomt met de zoekterm
+ * Geeft bij de lagerinformatie 0 en NULL terug indien er niets is gevonden dat exact overeenkomt.
+ * BELANGRIJK: teruggekregen lagerinformatie moet worden vrijgemaakt met free_lagerinformatie()
+ * @param zoekterm Naam van het lager dat men wilt zoeken
+ * @return lagerinformatie 
+ */
 lagerinformatie ExactZoeken(char* zoekterm)
 {
     // In elke tabel kijken of er een lager wordt gevonden
@@ -442,6 +456,12 @@ static size_t LagersZoeken_AantalLagers = 0;
 static char* LagersZoeken_Zoekterm;
 static char** LagersZoeken_GevondenLagers;
 
+/**
+ * @brief Wordt uitgevoerdt op het einde van elke cel die door de CSV-parser van lagerszoeken wordt uitgevoerd
+ * Gaat bij de eerste cel van elke rij kijken of de naam overeenkomt en indien die overeenkomt gaat het die waarde opslaan
+ * @param gegeven 
+ * @param lengte 
+ */
 static void LagersZoeken_EindeCel(void* gegeven, size_t lengte, __attribute__ ((unused)) void* datatabel)
 {
     if(LagersZoeken_EersteCel && (strlen(LagersZoeken_Zoekterm) <= lengte))
@@ -482,6 +502,10 @@ static void LagersZoeken_EindeCel(void* gegeven, size_t lengte, __attribute__ ((
     }
 }
 
+/**
+ * @brief Als het einde van een rij is bereikt, betekend dit dat de volgende cel de eerste cel is van de rij
+ * 
+ */
 static void LagersZoeken_EindeRij(__attribute__ ((unused)) int teken, __attribute__ ((unused)) void* datatabel)
 {
     LagersZoeken_EersteCel = true;
@@ -516,6 +540,13 @@ static gevondenlagers LagersZoeken_Intern(char* restrict zoekterm, unsigned char
     return lagers;
 }
 
+/**
+ * @brief Gaat alle lagers zoeken waarvan de ingegeven zoekterm overeenkomt met het bevin van de designatie
+ * 629 --> 629-C, 629-2Z...
+ * BELANGRIJK: Teruggekragen lagers moeten worden vrijgemaakt met free_gevondenlagers()
+ * @param zoekterm Begin van de naam van het lager dat men wilt zoeken
+ * @return gevondenlagers 
+ */
 gevondenlagers LagersZoeken(char* zoekterm)
 {
     // In alle verschillende lagertabellen zoeken en deze dan bundelen
@@ -622,6 +653,12 @@ gevondenlagers LagersZoeken(char* zoekterm)
     return alleLagers;
 }
 
+/**
+ * @brief Zet het lagersoort om in een string om weer te geven
+ * 
+ * @param lager Lagersoort waarvan men de naam als string wilt
+ * @return char* 
+ */
 char* LagersoortNaarString(enum lagersoort lager)
 {
     switch(lager)
@@ -653,6 +690,11 @@ char* LagersoortNaarString(enum lagersoort lager)
     }
 }
 
+/**
+ * @brief Gaat het gereserveerde geheugen vrijmaken voor de gevonden lagers
+ * 
+ * @param lagers De gevonden lagers die men uit het geheugen wilt verwijderen
+ */
 void free_gevondenlagers(gevondenlagers* lagers)
 {
     if(lagers->aantal!= 0)
@@ -669,6 +711,11 @@ void free_gevondenlagers(gevondenlagers* lagers)
 
 }
 
+/**
+ * @brief Gaat het gereserveerde geheugen vrijmaken voor de lagerinformatie
+ * 
+ * @param lager De lagerinformatie die men uit het geheugen wilt verwijderen
+ */
 void free_lagerinformatie(lagerinformatie* lager)
 {
     if (lager->aantalGegevens != 0)
@@ -687,6 +734,9 @@ void free_lagerinformatie(lagerinformatie* lager)
     lager->kolomtitels = NULL;
     lager->lagergegevens = NULL;
 }
+
+
+// Verschillende formules om van elk type lager te bepalen wat de equivalente belasting is van een axiale en radiale kracht
 
 static double equivalenteBelasting_Kogellager(double radiaalkracht, double axiaalkracht, double f0, double statischdraaggetal)
 {
@@ -715,13 +765,6 @@ static double equivalenteBelasting_Kogellager(double radiaalkracht, double axiaa
     return resultaat;
 }
 
-/**
- * @brief Veronderstel X of O opstelling
- * 
- * @param radiaalkracht 
- * @param axiaalkracht 
- * @return double 
- */
 static double equivalenteBelasting_Hoekcontactkogellager(double radiaalkracht, double axiaalkracht)
 {
     double resultaat = 0;
@@ -903,6 +946,13 @@ static double equivalenteBelasting_Carblager(double radiaalkracht)
     return radiaalkracht;
 }
 
+/**
+ * @brief Berekent de equivalente belasting (P) van een lager dat wordt belast door een statische radiaalkracht en axiaalkracht in functie van het type lager dat is gekozen
+ * @param lager Lager waarvan men de equivalente belasting (P) wilt weten
+ * @param radiaalkracht Radiale kracht dat wordt uitgeoefend op het lager in Newton
+ * @param axiaalkracht Axiale kracht dat op het lager wordt uitgeoefend in Newton
+ * @return Equivalente belasting op het lager in Newton
+ */
 double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double axiaalkracht)
 {
     double resultaat = 0;
@@ -988,7 +1038,7 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
     return resultaat;
 }
 
-
+// Wordt interg gebruikt voor de berekening van de equivalente belasting bij een veranderlijke belasting om de toerental en belastingsfunctie door te kunnen geven naar de functie waar een integraal van wordt genomen
 struct veranderlijkeBelasting_InterneArgumenten
 {
     double (*toerentalfunctie)(double, void*);
@@ -996,6 +1046,14 @@ struct veranderlijkeBelasting_InterneArgumenten
     veranderlijkeBelasting_argumenten argumenten;
 };
 
+/**
+ * @brief De interne functie voor de veranderlijke belasting.
+ * Geeft het bovenste lid van de formule van de variabele belasting terug aan de hand van de gegeven toerental functie en belastingsfunctie, rekening houden met de exponent
+ * Hier kan een integraal van worden genomen
+ * @param x De veranderlijke 
+ * @param argumenten Hier komt een pointer naar de struct veranderlijkeBelasting_InterneArgumenten
+ * @return double 
+ */
 static double veranderlijkeBelasting_Functie_Intern(double x, void* argumenten)
 {
     struct veranderlijkeBelasting_InterneArgumenten* parameters = argumenten;
@@ -1028,6 +1086,21 @@ static double veranderlijkeBelasting_Functie_Intern(double x, void* argumenten)
     return ((1/aiso)*toerental*pow(belasting, exponent));
 }
 
+/**
+ * @brief Gaat de equivalente belasting berekenen die op het lager wordt uitgeoefend gedurende het variabele proces waarbij zowel het toerental als de belasting kunnen varieren.
+ * 
+ * @param toerentalfunctie Functie die het toerental beschrijft in functie van de tijd (in n/min)
+ * Moet als eerste parameter het tijdstip aanvaarden (double) waarvan men het toerental wilt weten en als tweede parameter een void*. Deze krijgt de struct veranderlijkeBelasting_argumenten mee en kan intern worden uitgelezen
+ * @param belastingsfunctie Functie die de belasting op het lager beschrijft in functie van de tijd (in Newton)
+ * Moet als eerste parameter het tijdstip aanvaarden (double) waarvan men de belasting wilt weten en als tweede parameter een void*. Deze krijgt de struct veranderlijkeBelasting_argumenten mee en kan intern worden uitgelezen
+ * @param ondergrens Minimum tijdstip waarop men wilt beginnen (vaak 0) in seconden
+ * @param bovengrens Maximale tijdstip waarbij men het wilt berekenen (vaak de hele procesduur) in seconden
+ * @param argumenten Struct waarin men alle informatie plaatst die nodig is om de aiso factor te berekenen en welke exponent men moet gebruiken voor het lager
+ * Wordt ook doorgegeven naar de toerentalfunctie en belastingsfunctie
+ * @param uitkomstgemiddeldtoerental Hier kan men indien gewenst een pointer invullen en deze zal op het einde van de berekening worden ingevuld met het gemiddelde toerental in (n/min) van het proces
+ * Indien men dit niet wenst te weten kan men NULL invullen
+ * @return double Geeft de equivalente belasting terug die het lager ondervondt gedurende het variabele proces in Newton
+ */
 double veranderlijkeBelasting_Functie(double (*toerentalfunctie)(double, void*), double (*belastingsfunctie)(double, void*), double ondergrens, double bovengrens, veranderlijkeBelasting_argumenten argemunten, double* uitkomstgemiddeldtoerental)
 {
     double resultaat = 0;
@@ -1087,7 +1160,6 @@ double veranderlijkeBelasting_Functie(double (*toerentalfunctie)(double, void*),
     
     resultaat = pow(resultaatBovenstelid/aantalOmwentelingen, 1.0/exponent);
 
-
     return resultaat;
 }
 
@@ -1106,10 +1178,17 @@ double interpoleer(double x1, double y1, double x2, double y2, double xvraag)
     return (y2 - y1)/(x2 - x1)*(xvraag - x1) + y1;
 }
 
-struct veranderlijkeBelasting_procesgegevens* Procesverloop;
-int AantalGegevens;
+// Wordt intern gebruikt om de toerental en belastingsfunctie op te kunnen stellen
+static struct veranderlijkeBelasting_procesgegevens* Procesverloop;
+static int AantalGegevens;
 
-static double veranderlijkeBelasting_Tabel_Toerentalfunctie(double x, void* argumenten)
+/**
+ * @brief Geeft het toerental terug door de waarden in het procesverloop uit te lezen en te interpoleren
+ * 
+ * @param x 
+ * @return double 
+ */
+static double veranderlijkeBelasting_Tabel_Toerentalfunctie(double x, __attribute__ ((unused)) void* argumenten)
 {
     // Pakt dat de grenzen [100;120[ zijn inclusieve ondergrens
     // De gegevens bestaan uit vakken. Het aantal vakken is één minder dan het aantal rijen. 
@@ -1128,7 +1207,13 @@ static double veranderlijkeBelasting_Tabel_Toerentalfunctie(double x, void* argu
     return interpoleer(Procesverloop[vak].tijdstip, Procesverloop[vak].toerental, Procesverloop[vak+1].tijdstip, Procesverloop[vak + 1].toerental, x);
 }
 
-static double veranderlijkeBelasting_Tabel_Belastingsfunctie(double x, void* argumenten)
+/**
+ * @brief Geeft het toerental terug door de waarden in het procesverloop uit te lezen en te interpoleren
+ * 
+ * @param x 
+ * @return double 
+ */
+static double veranderlijkeBelasting_Tabel_Belastingsfunctie(double x, __attribute__ ((unused)) void* argumenten)
 {
     // Pakt dat de grenzen [100;120[ zijn inclusieve ondergrens
     // De gegevens bestaan uit vakken. Het aantal vakken is één minder dan het aantal rijen. 
@@ -1147,6 +1232,20 @@ static double veranderlijkeBelasting_Tabel_Belastingsfunctie(double x, void* arg
     return interpoleer(Procesverloop[vak].tijdstip, Procesverloop[vak].belasting, Procesverloop[vak+1].tijdstip, Procesverloop[vak + 1].belasting, x);
 }
 
+/**
+ * @brief Geeft de equivalente belasting die het lager ondervindt gedurende een variabel proces
+ * De procesgegevens worden aan de hand van een struct array toegegeven. 
+ * Hierbij moet men in de procesgegevens op bepaalde tijdstippen zeggen wat de belasting is en het toerental
+ * De gegevens tussen twee tijdstippen worden door lineaire interpollatie bepaald
+ * De gegevens moeten gesorteerd zijn op tijd
+ * @param gegevens De array van procesgegevens. Deze bestaat uit verschillende momenten waarvan het tijdstip, toerental en belasting worden gegeven. Waarden tussen twee punten worden door linaire interpollatie bepaald
+ * @param aantalgegevens De hoeveelheid punten waarvan men gegevens geeft, (moet overeenkomen met de lengte van de array. (laatste gegeven is gegevens[aantalgegevens - 1])
+ * @param argemunten Struct van gegevens over het lager en over de werkingstoestand van het lager, zoals viscositeit en temperatuur. 
+ * Wordt ook doorgegeven naar belastingsfunctie en toerentalfunctie
+ * @param uitkomstgemiddeldtoerental Hier kan men indien gewenst een pointer invullen en deze zal op het einde van de berekening worden ingevuld met het gemiddelde toerental in (n/min) van het proces
+ * Indien men dit niet wenst te weten kan men NULL invullen
+ * @return double De equivalente belasting in Newton die het lager ondervondt gedurende het variabele proces
+ */
 double veranderlijkeBelasting_Tabel(struct veranderlijkeBelasting_procesgegevens* gegevens, int aantalgegevens, veranderlijkeBelasting_argumenten argemunten, double* uitkomstgemiddeldtoerental)
 {
     // De procesgegevens opslaan in de global variabele
