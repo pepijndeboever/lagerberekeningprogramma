@@ -41,7 +41,7 @@ static void veranderlijkeBelasting_btnBereken(char* txtEquivalenteBelasting, cha
 
 static void lagergegevens_btnZoeken(char *zoekterm, char *lijst, gevondenlagers *delagers);
 
-static void equivalenteBelasting_btnBerekenen();
+static void equivalenteBelasting_btnBerekenen(lagerinformatie lager, double radiaalkracht, double axiaalkracht, char* resultaat);
 
 static void grafiekTekenen(void);
 

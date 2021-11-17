@@ -459,8 +459,8 @@ static char** LagersZoeken_GevondenLagers;
 /**
  * @brief Wordt uitgevoerdt op het einde van elke cel die door de CSV-parser van lagerszoeken wordt uitgevoerd
  * Gaat bij de eerste cel van elke rij kijken of de naam overeenkomt en indien die overeenkomt gaat het die waarde opslaan
- * @param gegeven 
- * @param lengte 
+ * @param gegeven De waarde die in de cel stond als string
+ * @param lengte De lengte van de string, exclusief 0 op het einde
  */
 static void LagersZoeken_EindeCel(void* gegeven, size_t lengte, __attribute__ ((unused)) void* datatabel)
 {
@@ -685,8 +685,6 @@ char* LagersoortNaarString(enum lagersoort lager)
         return "Dubbelrijig Tonlager";
     case LAGERSOORT_CARBLAGER:
         return "Carblager";
-    default:
-        return NULL;
     }
 }
 
@@ -1030,8 +1028,6 @@ double equivalenteBelasting(lagerinformatie lager, double radiaalkracht, double 
             resultaat = equivalenteBelasting_Carblager(radiaalkracht);
         }
         break;
-    default:
-        break;
     }
 
 
@@ -1095,7 +1091,7 @@ static double veranderlijkeBelasting_Functie_Intern(double x, void* argumenten)
  * Moet als eerste parameter het tijdstip aanvaarden (double) waarvan men de belasting wilt weten en als tweede parameter een void*. Deze krijgt de struct veranderlijkeBelasting_argumenten mee en kan intern worden uitgelezen
  * @param ondergrens Minimum tijdstip waarop men wilt beginnen (vaak 0) in seconden
  * @param bovengrens Maximale tijdstip waarbij men het wilt berekenen (vaak de hele procesduur) in seconden
- * @param argumenten Struct waarin men alle informatie plaatst die nodig is om de aiso factor te berekenen en welke exponent men moet gebruiken voor het lager
+ * @param argemunten Struct waarin men alle informatie plaatst die nodig is om de aiso factor te berekenen en welke exponent men moet gebruiken voor het lager
  * Wordt ook doorgegeven naar de toerentalfunctie en belastingsfunctie
  * @param uitkomstgemiddeldtoerental Hier kan men indien gewenst een pointer invullen en deze zal op het einde van de berekening worden ingevuld met het gemiddelde toerental in (n/min) van het proces
  * Indien men dit niet wenst te weten kan men NULL invullen
@@ -1185,7 +1181,7 @@ static int AantalGegevens;
 /**
  * @brief Geeft het toerental terug door de waarden in het procesverloop uit te lezen en te interpoleren
  * 
- * @param x 
+ * @param x De veranderlijke (tijd) waarbij men het toerental wilt weten op dat moment
  * @return double 
  */
 static double veranderlijkeBelasting_Tabel_Toerentalfunctie(double x, __attribute__ ((unused)) void* argumenten)
@@ -1210,7 +1206,7 @@ static double veranderlijkeBelasting_Tabel_Toerentalfunctie(double x, __attribut
 /**
  * @brief Geeft het toerental terug door de waarden in het procesverloop uit te lezen en te interpoleren
  * 
- * @param x 
+ * @param x De veranderlijke (tijd) waarbij men de belasting wilt weten op dat moment
  * @return double 
  */
 static double veranderlijkeBelasting_Tabel_Belastingsfunctie(double x, __attribute__ ((unused)) void* argumenten)
