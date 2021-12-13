@@ -20,10 +20,6 @@
 #include "lagers/headers/vierpuntslagers.h"
 #include "lagers/headers/zichinstellandekogellagers.h"
 
-// De 3 standard library headers kan men ook wel laeten. Dan is het uitvoerbaar bestand iets kleiner omdat er dan waarschijnlijk minder symbolen worden aangemaakt. Als men achteraf strip uitvoert blijft de grootte wel hetzelfde bij de twee situaties.
-#ifdef WINNI
-#include <stdlib.h>
-#endif
 
 /**
  * @brief Berekend de standaard lagerlevensduur in miljoen omwentelingen
@@ -1173,6 +1169,7 @@ double interpoleer(double x1, double y1, double x2, double y2, double xvraag)
 {
     return (y2 - y1)/(x2 - x1)*(xvraag - x1) + y1;
 }
+
 
 // Wordt intern gebruikt om de toerental en belastingsfunctie op te kunnen stellen
 static struct veranderlijkeBelasting_procesgegevens* Procesverloop;
