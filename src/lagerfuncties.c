@@ -298,13 +298,28 @@ static void ExactZoeken_EindeCel(void* gegeven, size_t lengte, __attribute__ ((u
 
         // Toewijzen
         ExactZoeken_KolomKoppen[ExactZoeken_AantalKolommen - 1] = calloc(lengte + 1, sizeof(char));
+        
+        // Eventueel verwijderen, gewoon zodat static analyzer geen fout geeft
+        if(ExactZoeken_KolomKoppen[ExactZoeken_AantalKolommen - 1] == NULL)
+        {
+            printf("Geen geheugen kunnen toewijzen; lijn: %d", __LINE__);
+            exit(1);
+        }
         strcpy(ExactZoeken_KolomKoppen[ExactZoeken_AantalKolommen - 1], gegeven);
     }
 
+    // Indien 
     if(ExactZoeken_JuisteRij)
     {
         // Indien het de juiste rij is, moet het gegeven worden opgeslagen
         ExactZoeken_GevondenGegevens[ExactZoeken_HuidigeKolom] = (char*)calloc(lengte + 1, sizeof(char)); // De eerste rij wordt nooit gevraagd, want deze bevat de kolomkoppen Bijgevolg zal de eerste pointer dus altijd al zijn toegewezen
+        
+        if(ExactZoeken_GevondenGegevens[ExactZoeken_HuidigeKolom] == NULL)
+        {
+            printf("Geen geheugen kunnen toewijzen; lijn: %d", __LINE__);
+            exit(1);
+        }
+        
         strcpy(ExactZoeken_GevondenGegevens[ExactZoeken_HuidigeKolom], (char*)gegeven);
 
         ExactZoeken_HuidigeKolom++;
@@ -491,10 +506,16 @@ static void LagersZoeken_EindeCel(void* gegeven, size_t lengte, __attribute__ ((
 
             // Effectief toewijzen
             LagersZoeken_GevondenLagers[LagersZoeken_AantalLagers - 1] = calloc(sizeof(char), lengte + 1);
+            
+            if(LagersZoeken_GevondenLagers[LagersZoeken_AantalLagers - 1] == NULL)
+            {
+                printf("Fout geen geheugen kunnen toewijzen; lijn: %d", __LINE__);
+                exit(1);
+            }
+            
             strcpy(LagersZoeken_GevondenLagers[LagersZoeken_AantalLagers - 1], gegeven);
 
         }
-
     }
 }
 
@@ -681,6 +702,8 @@ char* LagersoortNaarString(enum lagersoort lager)
         return "Dubbelrijig Tonlager";
     case LAGERSOORT_CARBLAGER:
         return "Carblager";
+    default:
+        return "";
     }
 }
 

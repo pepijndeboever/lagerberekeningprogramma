@@ -9,9 +9,6 @@ project(Lagerberekening VERSION 0.1.0)
 
 # Build flags
 add_compile_options(-Wall -Wextra -pedantic -march=native -fanalyzer -std=c2x) # nog -O3 -Ofast toevoegen of -O2; -Og voor debuggen
-#set(CMAKE_LINKER "/usr/bin/clang")
-#set(CMAKE_EXE_LINKER_FLAGS -static)
-
 
 add_executable(Lagerberekening src/main.c)
 
