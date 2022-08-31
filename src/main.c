@@ -721,7 +721,7 @@ int main()
             //--------------------------------------------------------------------------------
             GuiGroupBox((Rectangle){350, 310, 575, 475}, "Grafiek");
             DrawRectangleLines(365, 320, 545, 455, GetColor(0x90abb5ff));
-            GuiGrid((Rectangle) {365, 320, 545, 455}, 45.4f, 5.f);
+            GuiGrid((Rectangle) {365, 320, 545, 455}, "", 45.4f, 5.f);
             grafiekTekenen();
 
 
