@@ -1,3 +1,4 @@
 # build folder moet niet mee
 build/
 .vscode/
+documentatie/
