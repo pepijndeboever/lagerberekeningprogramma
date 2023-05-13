@@ -436,7 +436,6 @@ int main()
             sprintf(smering_txtGemiddeldeDiameterText, "%.2f", gemiddeldeDiameter_Berekend);
         }
         
-        // Aanpassen zodat het functie gebruikt
         // Nodige viscositeit berekenen
         if (gemiddeldeDiameter_Berekend != oud_gemiddeldeDiameter_Berekend || smering_vbToerentalSmeringEditMode)
         {
